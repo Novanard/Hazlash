@@ -1,113 +1,220 @@
 import { useRouter } from 'expo-router';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useState } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+const COLORS = {
+  bg: '#F4EFE4',
+  card: '#FFFFFF',
+  text: '#1F2933',
+  muted: '#6B7280',
+  primary: '#8EAA8C',
+  primaryDark: '#5F7F5F',
+  border: '#E2D8C8',
+};
+
+type OptionGroupProps = {
+  title: string;
+  subtitle: string;
+  options: string[];
+  selected: string;
+  onSelect: (value: string) => void;
+};
+
+function OptionGroup({ title, subtitle, options, selected, onSelect }: OptionGroupProps) {
+  return (
+    <View style={styles.card}>
+      <Text style={styles.questionTitle}>{title}</Text>
+      <Text style={styles.questionSubtitle}>{subtitle}</Text>
+
+      <View style={styles.optionsRow}>
+        {options.map((option) => {
+          const isSelected = selected === option;
+
+          return (
+            <TouchableOpacity
+              key={option}
+              style={[styles.option, isSelected && styles.optionSelected]}
+              onPress={() => onSelect(option)}
+              activeOpacity={0.85}
+            >
+              <Text style={[styles.optionText, isSelected && styles.optionTextSelected]}>
+                {option}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
 
 export default function CheckInScreen() {
   const router = useRouter();
 
+  const [sleep, setSleep] = useState('סביר');
+  const [focus, setFocus] = useState('בינוני');
+  const [energy, setEnergy] = useState('בינונית');
+  const [stress, setStress] = useState('גבוה');
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>צ׳ק־אין יומי</Text>
-
-      <Text style={styles.question}>
-        איך ישנת הלילה?
-      </Text>
-
-      <View style={styles.row}>
-        <TouchableOpacity style={styles.option}>
-          <Text>גרוע</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.option}>
-          <Text>סביר</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.option}>
-          <Text>מצוין</Text>
-        </TouchableOpacity>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <View style={styles.header}>
+        <Text style={styles.badge}>צ׳ק־אין יומי</Text>
+        <Text style={styles.title}>איך אתה מגיע היום לשגרה?</Text>
+        <Text style={styles.description}>
+          כמה שאלות קצרות שיעזרו להתאים המלצה פשוטה להיום — לימודים, עבודה, שינה וריכוז.
+        </Text>
       </View>
 
-      <Text style={styles.question}>
-        כמה אנרגיה יש לך היום?
-      </Text>
+      <OptionGroup
+        title="שינה"
+        subtitle="איך ישנת הלילה?"
+        options={['חלש', 'סביר', 'טוב']}
+        selected={sleep}
+        onSelect={setSleep}
+      />
 
-      <View style={styles.scale}>
-        <Text>1</Text>
-        <Text>2</Text>
-        <Text>3</Text>
-        <Text>4</Text>
-        <Text>5</Text>
-      </View>
+      <OptionGroup
+        title="ריכוז"
+        subtitle="כמה קל לך להתרכז היום?"
+        options={['קשה', 'בינוני', 'טוב']}
+        selected={focus}
+        onSelect={setFocus}
+      />
 
-      <Text style={styles.question}>
-        כמה לחץ אתה מרגיש?
-      </Text>
+      <OptionGroup
+        title="אנרגיה"
+        subtitle="כמה אנרגיה יש לך היום?"
+        options={['נמוכה', 'בינונית', 'גבוהה']}
+        selected={energy}
+        onSelect={setEnergy}
+      />
 
-      <View style={styles.scale}>
-        <Text>1</Text>
-        <Text>2</Text>
-        <Text>3</Text>
-        <Text>4</Text>
-        <Text>5</Text>
-      </View>
+      <OptionGroup
+        title="לחץ"
+        subtitle="כמה עומס או לחץ אתה מרגיש?"
+        options={['נמוך', 'בינוני', 'גבוה']}
+        selected={stress}
+        onSelect={setStress}
+      />
 
       <TouchableOpacity
-        style={styles.button}
+        style={styles.mainButton}
         onPress={() => router.push('/recommendation')}
+        activeOpacity={0.9}
       >
-        <Text style={styles.buttonText}>
-          קבל המלצה
-        </Text>
+        <Text style={styles.mainButtonText}>קבל המלצה</Text>
       </TouchableOpacity>
-    </View>
+
+      <TouchableOpacity onPress={() => router.back()} style={styles.secondaryButton}>
+        <Text style={styles.secondaryButtonText}>חזרה למסך הבית</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F4EFE4',
+    backgroundColor: COLORS.bg,
+  },
+  content: {
     padding: 24,
-    justifyContent: 'center',
+    paddingTop: 64,
+    paddingBottom: 40,
+  },
+  header: {
+    alignItems: 'flex-end',
+    marginBottom: 20,
+  },
+  badge: {
+    backgroundColor: '#E8DED0',
+    color: COLORS.primaryDark,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 999,
+    fontWeight: '800',
+    marginBottom: 14,
   },
   title: {
     fontSize: 30,
-    fontWeight: '800',
+    fontWeight: '900',
+    color: COLORS.text,
     textAlign: 'right',
-    marginBottom: 30,
+    lineHeight: 38,
   },
-  question: {
+  description: {
+    marginTop: 10,
+    fontSize: 16,
+    color: COLORS.muted,
     textAlign: 'right',
-    fontSize: 18,
-    marginBottom: 10,
-    marginTop: 20,
+    lineHeight: 24,
   },
-  row: {
+  card: {
+    backgroundColor: COLORS.card,
+    borderRadius: 22,
+    padding: 18,
+    marginTop: 14,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  questionTitle: {
+    fontSize: 19,
+    fontWeight: '900',
+    color: COLORS.text,
+    textAlign: 'right',
+  },
+  questionSubtitle: {
+    marginTop: 5,
+    fontSize: 14,
+    color: COLORS.muted,
+    textAlign: 'right',
+  },
+  optionsRow: {
     flexDirection: 'row-reverse',
     gap: 10,
+    marginTop: 14,
   },
   option: {
     flex: 1,
-    backgroundColor: 'white',
-    padding: 15,
-    borderRadius: 12,
+    paddingVertical: 13,
+    borderRadius: 15,
+    backgroundColor: '#F8F5EF',
+    borderWidth: 1,
+    borderColor: COLORS.border,
     alignItems: 'center',
   },
-  scale: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: 'white',
-    padding: 15,
-    borderRadius: 12,
+  optionSelected: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
   },
-  button: {
-    backgroundColor: '#8EAA8C',
-    marginTop: 40,
-    padding: 18,
-    borderRadius: 16,
+  optionText: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: COLORS.text,
+  },
+  optionTextSelected: {
+    color: '#FFFFFF',
+  },
+  mainButton: {
+    marginTop: 24,
+    backgroundColor: COLORS.primary,
+    paddingVertical: 18,
+    borderRadius: 18,
     alignItems: 'center',
   },
-  buttonText: {
-    color: 'white',
-    fontWeight: '700',
+  mainButtonText: {
+    color: '#FFFFFF',
+    fontSize: 17,
+    fontWeight: '900',
+  },
+  secondaryButton: {
+    marginTop: 14,
+    alignItems: 'center',
+  },
+  secondaryButtonText: {
+    color: COLORS.primaryDark,
+    fontSize: 15,
+    fontWeight: '800',
   },
 });
