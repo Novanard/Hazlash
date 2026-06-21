@@ -1,8 +1,20 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useMemo, useState } from 'react';
+import {
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import homeS from './styles/homeStyles';
-import {Text, TouchableOpacity, View } from 'react-native';
 
-const todayTasks = [
+type Task = {
+  title: string;
+  done: boolean;
+};
+
+const defaultTasks: Task[] = [
   { title: '30 דקות לימודים / עבודה', done: true },
   { title: 'אימון או הליכה קצרה', done: true },
   { title: 'ארוחה מסודרת', done: true },
@@ -12,18 +24,77 @@ const todayTasks = [
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { aiTasks } = useLocalSearchParams<{ aiTasks?: string }>();
+
+  const tasksFromRecommendation = useMemo<Task[] | null>(() => {
+    if (!aiTasks) return null;
+
+    try {
+      const parsed = JSON.parse(aiTasks);
+
+      if (!Array.isArray(parsed)) return null;
+
+      return parsed.map((title) => ({
+        title: String(title),
+        done: false,
+      }));
+    } catch {
+      return null;
+    }
+  }, [aiTasks]);
+
+  const [todayTasks, setTodayTasks] = useState<Task[]>(defaultTasks);
+  const [customTask, setCustomTask] = useState('');
+
+  useEffect(() => {
+    if (tasksFromRecommendation) {
+      setTodayTasks(tasksFromRecommendation);
+    }
+  }, [tasksFromRecommendation]);
 
   const completedTasks = todayTasks.filter((task) => task.done).length;
   const totalTasks = todayTasks.length;
-  const progressPercent = Math.round((completedTasks / totalTasks) * 100);
+  const progressPercent =
+    totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
 
   const currentTime = new Date().toLocaleTimeString('he-IL', {
     hour: '2-digit',
     minute: '2-digit',
   });
 
+  const toggleTask = (title: string) => {
+    setTodayTasks((currentTasks) =>
+      currentTasks.map((task) =>
+        task.title === title ? { ...task, done: !task.done } : task
+      )
+    );
+  };
+
+  const addCustomTask = () => {
+    const cleanTitle = customTask.trim();
+
+    if (!cleanTitle) return;
+
+    setTodayTasks((currentTasks) => [
+      ...currentTasks,
+      { title: cleanTitle, done: false },
+    ]);
+
+    setCustomTask('');
+  };
+
+  const removeTask = (title: string) => {
+    setTodayTasks((currentTasks) =>
+      currentTasks.filter((task) => task.title !== title)
+    );
+  };
+
   return (
-    <View style={homeS.screen}>
+    <ScrollView
+      style={homeS.screen}
+      contentContainerStyle={homeS.content}
+      showsVerticalScrollIndicator={false}
+    >
       <View style={homeS.header}>
         <Text style={homeS.bell}>⌕</Text>
         <Text style={homeS.logo}>חזל״ש</Text>
@@ -71,29 +142,62 @@ export default function HomeScreen() {
         <View style={homeS.taskList}>
           {todayTasks.map((task) => (
             <View key={task.title} style={homeS.taskRow}>
-              <Text style={[homeS.taskCheck, task.done && homeS.taskCheckDone]}>
-                {task.done ? '✓' : '○'}
-              </Text>
+              <TouchableOpacity
+                onPress={() => toggleTask(task.title)}
+                activeOpacity={0.75}
+              >
+                <Text style={[homeS.taskCheck, task.done && homeS.taskCheckDone]}>
+                  {task.done ? '✓' : '○'}
+                </Text>
+              </TouchableOpacity>
 
-              <Text style={[homeS.taskText, task.done && homeS.taskTextDone]}>
-                {task.title}
-              </Text>
+              <TouchableOpacity
+                onPress={() => toggleTask(task.title)}
+                activeOpacity={0.75}
+                style={homeS.taskTitleButton}
+              >
+                <Text style={[homeS.taskText, task.done && homeS.taskTextDone]}>
+                  {task.title}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => removeTask(task.title)}
+                activeOpacity={0.75}
+              >
+                <Text style={homeS.removeTaskText}>הסר</Text>
+              </TouchableOpacity>
             </View>
           ))}
         </View>
 
-        <TouchableOpacity style={homeS.fullButton} activeOpacity={0.85}>
-          <Text style={homeS.buttonText}>עדכון משימות היום</Text>
-        </TouchableOpacity>
+        <View style={homeS.addTaskArea}>
+          <TextInput
+            value={customTask}
+            onChangeText={setCustomTask}
+            placeholder="הוסף משימה משלך"
+            placeholderTextColor="#8B7D68"
+            textAlign="right"
+            style={homeS.taskInput}
+          />
+
+          <TouchableOpacity
+            style={homeS.fullButton}
+            activeOpacity={0.85}
+            onPress={addCustomTask}
+          >
+            <Text style={homeS.buttonText}>הוסף משימה ידנית</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
-      <Text style={homeS.sectionHeader}>כניסה מהירה</Text>
+      <Text style={homeS.sectionHeader}>צ׳ק־אין יומי ותחנת איפוס</Text>
 
       <View style={homeS.row}>
         <View style={homeS.bottomCard}>
           <Text style={homeS.bottomTitle}>צ׳ק־אין</Text>
           <Text style={homeS.bottomText}>
-            בדיקה קצרה של שינה, ריכוז, אנרגיה ולחץ
+            כמה שאלות קצרות שיעזרו לנו להתאים המלצות ומשימות להיום.
           </Text>
 
           <TouchableOpacity
@@ -101,13 +205,15 @@ export default function HomeScreen() {
             onPress={() => router.push('/checkin')}
             activeOpacity={0.85}
           >
-            <Text style={homeS.checkinButtonText}>התחל צ׳ק־אין</Text>
+            <Text style={homeS.checkinButtonText}>התחל צ׳ק־אין וקבלת משימות</Text>
           </TouchableOpacity>
         </View>
 
         <View style={homeS.bottomCard}>
-          <Text style={homeS.bottomTitle}>מילואים</Text>
-          <Text style={homeS.bottomText}>חזרה הדרגתית אחרי קטיעה בשגרה</Text>
+          <Text style={homeS.bottomTitle}>תחנת איפוס</Text>
+          <Text style={homeS.bottomText}>
+            משחקים ותרגילים קצרים להרגעה, מיקוד והתמודדות עם לחץ.
+          </Text>
 
           <View style={homeS.reserveBadge}>
             <Text style={homeS.reserveBadgeText}>בקרוב</Text>
@@ -121,7 +227,6 @@ export default function HomeScreen() {
         <Text style={homeS.navItem}>☷</Text>
         <Text style={homeS.navActive}>⌂</Text>
       </View>
-    </View>
+    </ScrollView>
   );
 }
-

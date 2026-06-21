@@ -1,12 +1,9 @@
 import { StyleSheet} from 'react-native';
 const homeS = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#F4EFE4',
-    paddingHorizontal: 22,
-    paddingTop: 58,
-    paddingBottom: 92,
-  },
+screen: {
+  flex: 1,
+  backgroundColor: '#F4EFE4',
+},
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -275,20 +272,20 @@ const homeS = StyleSheet.create({
     fontWeight: '800',
     lineHeight: 34,
   },
-  navbar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 74,
-    backgroundColor: '#FFFDF7',
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-    flexDirection: 'row-reverse',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    paddingBottom: 10,
-  },
+navbar: {
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  right: 0,
+  height: 74,
+  backgroundColor: '#FFFDF7',
+  borderTopLeftRadius: 28,
+  borderTopRightRadius: 28,
+  flexDirection: 'row-reverse',
+  justifyContent: 'space-around',
+  alignItems: 'center',
+  paddingBottom: 10,
+},
   navItem: {
     fontSize: 24,
     color: '#9A958B',
@@ -298,5 +295,36 @@ const homeS = StyleSheet.create({
     color: '#7B9B78',
     fontWeight: '800',
   },
+content: {
+  paddingHorizontal: 22,
+  paddingTop: 58,
+  paddingBottom: 120,
+},
+
+taskTitleButton: {
+  flex: 1,
+},
+
+removeTaskText: {
+  color: '#7B4F3A',
+  fontWeight: '700',
+},
+
+addTaskArea: {
+  marginTop: 14,
+},
+
+taskInput: {
+  backgroundColor: '#F4EFE4',
+  borderRadius: 14,
+  paddingHorizontal: 14,
+  paddingVertical: 10,
+  color: '#2F332C',
+  marginBottom: 10,
+},
+root: {
+  flex: 1,
+  backgroundColor: '#F4EFE4',
+},
 });
 export default homeS;
