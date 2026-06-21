@@ -1,17 +1,7 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
-const COLORS = {
-  bg: '#F4EFE4',
-  card: '#FFFFFF',
-  text: '#1F2933',
-  muted: '#6B7280',
-  primary: '#8EAA8C',
-  primaryDark: '#5F7F5F',
-  border: '#E2D8C8',
-};
-
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import checkinStyles from './styles/checkinStyles';
 type OptionGroupProps = {
   title: string;
   subtitle: string;
@@ -22,22 +12,22 @@ type OptionGroupProps = {
 
 function OptionGroup({ title, subtitle, options, selected, onSelect }: OptionGroupProps) {
   return (
-    <View style={styles.card}>
-      <Text style={styles.questionTitle}>{title}</Text>
-      <Text style={styles.questionSubtitle}>{subtitle}</Text>
+    <View style={checkinStyles.card}>
+      <Text style={checkinStyles.questionTitle}>{title}</Text>
+      <Text style={checkinStyles.questionSubtitle}>{subtitle}</Text>
 
-      <View style={styles.optionsRow}>
+      <View style={checkinStyles.optionsRow}>
         {options.map((option) => {
           const isSelected = selected === option;
 
           return (
             <TouchableOpacity
               key={option}
-              style={[styles.option, isSelected && styles.optionSelected]}
+              style={[checkinStyles.option, isSelected && checkinStyles.optionSelected]}
               onPress={() => onSelect(option)}
               activeOpacity={0.85}
             >
-              <Text style={[styles.optionText, isSelected && styles.optionTextSelected]}>
+              <Text style={[checkinStyles.optionText, isSelected && checkinStyles.optionTextSelected]}>
                 {option}
               </Text>
             </TouchableOpacity>
@@ -57,11 +47,11 @@ export default function CheckInScreen() {
   const [stress, setStress] = useState('גבוה');
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={styles.header}>
-        <Text style={styles.badge}>צ׳ק־אין יומי</Text>
-        <Text style={styles.title}>איך אתה מגיע היום לשגרה?</Text>
-        <Text style={styles.description}>
+    <ScrollView style={checkinStyles.container} contentContainerStyle={checkinStyles.content}>
+      <View style={checkinStyles.header}>
+        <Text style={checkinStyles.badge}>צ׳ק־אין יומי</Text>
+        <Text style={checkinStyles.title}>איך אתה מגיע היום לשגרה?</Text>
+        <Text style={checkinStyles.description}>
           כמה שאלות קצרות שיעזרו להתאים המלצה פשוטה להיום — לימודים, עבודה, שינה וריכוז.
         </Text>
       </View>
@@ -99,122 +89,17 @@ export default function CheckInScreen() {
       />
 
       <TouchableOpacity
-        style={styles.mainButton}
+        style={checkinStyles.mainButton}
         onPress={() => router.push('/recommendation')}
         activeOpacity={0.9}
       >
-        <Text style={styles.mainButtonText}>קבל המלצה</Text>
+        <Text style={checkinStyles.mainButtonText}>קבל המלצה</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.back()} style={styles.secondaryButton}>
-        <Text style={styles.secondaryButtonText}>חזרה למסך הבית</Text>
+      <TouchableOpacity onPress={() => router.back()} style={checkinStyles.secondaryButton}>
+        <Text style={checkinStyles.secondaryButtonText}>חזרה למסך הבית</Text>
       </TouchableOpacity>
     </ScrollView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.bg,
-  },
-  content: {
-    padding: 24,
-    paddingTop: 64,
-    paddingBottom: 40,
-  },
-  header: {
-    alignItems: 'flex-end',
-    marginBottom: 20,
-  },
-  badge: {
-    backgroundColor: '#E8DED0',
-    color: COLORS.primaryDark,
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: 999,
-    fontWeight: '800',
-    marginBottom: 14,
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: '900',
-    color: COLORS.text,
-    textAlign: 'right',
-    lineHeight: 38,
-  },
-  description: {
-    marginTop: 10,
-    fontSize: 16,
-    color: COLORS.muted,
-    textAlign: 'right',
-    lineHeight: 24,
-  },
-  card: {
-    backgroundColor: COLORS.card,
-    borderRadius: 22,
-    padding: 18,
-    marginTop: 14,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  questionTitle: {
-    fontSize: 19,
-    fontWeight: '900',
-    color: COLORS.text,
-    textAlign: 'right',
-  },
-  questionSubtitle: {
-    marginTop: 5,
-    fontSize: 14,
-    color: COLORS.muted,
-    textAlign: 'right',
-  },
-  optionsRow: {
-    flexDirection: 'row-reverse',
-    gap: 10,
-    marginTop: 14,
-  },
-  option: {
-    flex: 1,
-    paddingVertical: 13,
-    borderRadius: 15,
-    backgroundColor: '#F8F5EF',
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    alignItems: 'center',
-  },
-  optionSelected: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
-  },
-  optionText: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: COLORS.text,
-  },
-  optionTextSelected: {
-    color: '#FFFFFF',
-  },
-  mainButton: {
-    marginTop: 24,
-    backgroundColor: COLORS.primary,
-    paddingVertical: 18,
-    borderRadius: 18,
-    alignItems: 'center',
-  },
-  mainButtonText: {
-    color: '#FFFFFF',
-    fontSize: 17,
-    fontWeight: '900',
-  },
-  secondaryButton: {
-    marginTop: 14,
-    alignItems: 'center',
-  },
-  secondaryButtonText: {
-    color: COLORS.primaryDark,
-    fontSize: 15,
-    fontWeight: '800',
-  },
-});
