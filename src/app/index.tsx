@@ -76,21 +76,21 @@ export default function HomeScreen() {
     loadTasks();
   }, []);
 
-useEffect(() => {
-  const applyRecommendedTasks = async () => {
-    if (!tasksFromRecommendation) return;
+  useEffect(() => {
+    const applyRecommendedTasks = async () => {
+      if (!tasksFromRecommendation) return;
 
-    setTodayTasks(tasksFromRecommendation);
-    setLoaded(true);
+      setTodayTasks(tasksFromRecommendation);
+      setLoaded(true);
 
-    await AsyncStorage.setItem(
-      TASKS_STORAGE_KEY,
-      JSON.stringify(tasksFromRecommendation)
-    );
-  };
+      await AsyncStorage.setItem(
+        TASKS_STORAGE_KEY,
+        JSON.stringify(tasksFromRecommendation)
+      );
+    };
 
-  applyRecommendedTasks();
-}, [tasksFromRecommendation]);
+    applyRecommendedTasks();
+  }, [tasksFromRecommendation]);
 
   useEffect(() => {
     if (!loaded) return;
@@ -193,8 +193,12 @@ useEffect(() => {
             <View style={homeS.goalBarFill} />
           </View>
 
-          <TouchableOpacity style={homeS.greenButton} activeOpacity={0.85}>
-            <Text style={homeS.buttonText}>ניהול מטרות</Text>
+          <TouchableOpacity
+            style={homeS.greenButton}
+            activeOpacity={0.85}
+            onPress={() => router.push('/focusAreas')}
+          >
+            <Text style={homeS.buttonText}>תחומי מיקוד</Text>
           </TouchableOpacity>
         </View>
 
