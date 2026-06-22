@@ -39,13 +39,7 @@ const HISTORY_STORAGE_KEY = 'hazlash_day_history';
 const FOCUS_AREAS_STORAGE_KEY = 'hazlash_focus_areas';
 const SLEEP_HISTORY_STORAGE_KEY = 'hazlash_sleep_history';
 
-const defaultTasks: Task[] = [
-  { title: '30 דקות לימודים / עבודה', done: true },
-  { title: 'אימון או הליכה קצרה', done: true },
-  { title: 'ארוחה מסודרת', done: true },
-  { title: 'הפסקה בלי מסכים', done: false },
-  { title: 'שעת שינה קבועה', done: false },
-];
+const defaultTasks: Task[] = [];
 
 function ProgressCircle({ percent }: ProgressCircleProps) {
   const size = 86;
@@ -96,6 +90,8 @@ export default function HomeScreen() {
   const [customTask, setCustomTask] = useState('');
   const [loaded, setLoaded] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
+
+  const dayIsActive = todayTasks.length > 0;
 
   const tasksFromRecommendation = useMemo<Task[] | null>(() => {
     if (!aiTasks) return null;
@@ -274,157 +270,164 @@ export default function HomeScreen() {
       contentContainerStyle={homeS.content}
       showsVerticalScrollIndicator={false}
     >
- <View style={homeS.header}>
-  <Text style={homeS.bell}>⌕</Text>
-  <Text style={homeS.logo}>חזל״ש</Text>
-</View>
-
-<Text style={homeS.title}>היום שלי</Text>
-<Text style={homeS.subtitle}>חזרה לשגרה בצעדים הדרגתיים.</Text>
-
-<View style={homeS.row}>
-  <View style={homeS.smallCard}>
-    <View>
-      <Text style={homeS.cardTitle}>מטרה שבועית</Text>
-      <Text style={homeS.goalTitle}>אימון 4 פעמים השבוע</Text>
-      <Text style={homeS.goalProgress}>3 / 4 הושלמו</Text>
-
-      <View style={homeS.goalBar}>
-        <View style={homeS.goalBarFill} />
+      <View style={homeS.header}>
+        <Text style={homeS.bell}>⌕</Text>
+        <Text style={homeS.logo}>חזל״ש</Text>
       </View>
-    </View>
 
-    <TouchableOpacity
-      style={homeS.greenButton}
-      activeOpacity={0.85}
-      onPress={() => router.push('/focusAreas')}
-    >
-      <Text style={homeS.buttonText}>תחומי מיקוד</Text>
-    </TouchableOpacity>
-  </View>
+      <Text style={homeS.title}>היום שלי</Text>
+      <Text style={homeS.subtitle}>חזרה לשגרה בצעדים הדרגתיים.</Text>
 
-  <View style={homeS.smallCard}>
-    <View>
-      <Text style={homeS.cardTitle}>היום שלי</Text>
-      <Text style={homeS.timeText}>{currentTime}</Text>
+      <View style={homeS.row}>
+        <View style={homeS.smallCard}>
+          <View>
+            <Text style={homeS.cardTitle}>מטרה שבועית</Text>
+            <Text style={homeS.goalTitle}>אימון 4 פעמים השבוע</Text>
+            <Text style={homeS.goalProgress}>3 / 4 הושלמו</Text>
 
-      <ProgressCircle percent={progressPercent} />
+            <View style={homeS.goalBar}>
+              <View style={homeS.goalBarFill} />
+            </View>
+          </View>
 
-      <Text style={homeS.progressLabel}>
-        {completedTasks} מתוך {totalTasks} משימות
-      </Text>
-    </View>
+          <TouchableOpacity
+            style={homeS.greenButton}
+            activeOpacity={0.85}
+            onPress={() => router.push('/focusAreas')}
+          >
+            <Text style={homeS.buttonText}>תחומי מיקוד</Text>
+          </TouchableOpacity>
+        </View>
 
-    <TouchableOpacity
-      style={homeS.greenButton}
-      activeOpacity={0.85}
-      onPress={() => router.push('/daysHistory')}
-    >
-      <Text style={homeS.buttonText}>הימים שלי</Text>
-    </TouchableOpacity>
-  </View>
-</View>
+        <View style={homeS.smallCard}>
+          <View>
+            <Text style={homeS.cardTitle}>היום שלי</Text>
+            <Text style={homeS.timeText}>{currentTime}</Text>
+
+            <ProgressCircle percent={progressPercent} />
+
+            <Text style={homeS.progressLabel}>
+              {completedTasks} מתוך {totalTasks} משימות
+            </Text>
+          </View>
+
+          <TouchableOpacity
+            style={homeS.greenButton}
+            activeOpacity={0.85}
+            onPress={() => router.push('/daysHistory')}
+          >
+            <Text style={homeS.buttonText}>הימים שלי</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
 
       <View style={homeS.wideCard}>
         <Text style={homeS.dots}>⋮</Text>
         <Text style={homeS.sectionTitle}>המשימות של היום</Text>
         <Text style={homeS.cardText}>
-          מטרות קטנות וריאליות שעוזרות לחזור לשגרה בלי עומס מיותר.
+          {dayIsActive
+            ? 'מטרות קטנות וריאליות שעוזרות לחזור לשגרה בלי עומס מיותר.'
+            : 'אין יום פעיל כרגע. התחל צ׳ק־אין כדי לקבל משימות מותאמות להיום.'}
         </Text>
 
-        <View style={homeS.taskList}>
-          {todayTasks.map((task) => (
-            <View key={task.title} style={homeS.taskRow}>
+        {dayIsActive ? (
+          <>
+            <View style={homeS.taskList}>
+              {todayTasks.map((task) => (
+                <View key={task.title} style={homeS.taskRow}>
+                  <TouchableOpacity
+                    onPress={() => toggleTask(task.title)}
+                    activeOpacity={0.75}
+                  >
+                    <Text
+                      style={[
+                        homeS.taskCheck,
+                        task.done && homeS.taskCheckDone,
+                      ]}
+                    >
+                      {task.done ? '✓' : '○'}
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => toggleTask(task.title)}
+                    activeOpacity={0.75}
+                    style={homeS.taskTitleButton}
+                  >
+                    <Text
+                      style={[
+                        homeS.taskText,
+                        task.done && homeS.taskTextDone,
+                      ]}
+                    >
+                      {task.title}
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => removeTask(task.title)}
+                    activeOpacity={0.75}
+                  >
+                    <Text style={homeS.removeTaskText}>הסר</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+
+            <View style={homeS.addTaskArea}>
+              <TextInput
+                value={customTask}
+                onChangeText={setCustomTask}
+                placeholder="הוסף משימה משלך"
+                placeholderTextColor="#8B7D68"
+                textAlign="right"
+                style={homeS.taskInput}
+              />
+
               <TouchableOpacity
-                onPress={() => toggleTask(task.title)}
-                activeOpacity={0.75}
+                style={homeS.fullButton}
+                activeOpacity={0.85}
+                onPress={addCustomTask}
               >
-                <Text style={[homeS.taskCheck, task.done && homeS.taskCheckDone]}>
-                  {task.done ? '✓' : '○'}
-                </Text>
+                <Text style={homeS.buttonText}>הוסף משימה ידנית</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                onPress={() => toggleTask(task.title)}
-                activeOpacity={0.75}
-                style={homeS.taskTitleButton}
+                style={homeS.finishDayButton}
+                activeOpacity={0.85}
+                onPress={finishDay}
               >
-                <Text style={[homeS.taskText, task.done && homeS.taskTextDone]}>
-                  {task.title}
+                <Text style={homeS.finishDayText}>
+                  סיום יום ושמירת התקדמות
                 </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => removeTask(task.title)}
-                activeOpacity={0.75}
-              >
-                <Text style={homeS.removeTaskText}>הסר</Text>
               </TouchableOpacity>
             </View>
-          ))}
-        </View>
-
-        <View style={homeS.addTaskArea}>
-          <TextInput
-            value={customTask}
-            onChangeText={setCustomTask}
-            placeholder="הוסף משימה משלך"
-            placeholderTextColor="#8B7D68"
-            textAlign="right"
-            style={homeS.taskInput}
-          />
-
+          </>
+        ) : (
           <TouchableOpacity
             style={homeS.fullButton}
             activeOpacity={0.85}
-            onPress={addCustomTask}
+            onPress={startDailyCheckin}
           >
-            <Text style={homeS.buttonText}>הוסף משימה ידנית</Text>
+            <Text style={homeS.buttonText}>התחלת היום וקבלת משימות</Text>
           </TouchableOpacity>
+        )}
 
-          <TouchableOpacity
-            style={homeS.finishDayButton}
-            activeOpacity={0.85}
-            onPress={finishDay}
-          >
-            <Text style={homeS.finishDayText}>סיום יום ושמירת התקדמות</Text>
-          </TouchableOpacity>
-
-          {saveMessage ? (
-            <Text style={homeS.saveMessage}>{saveMessage}</Text>
-          ) : null}
-        </View>
+        {saveMessage ? (
+          <Text style={homeS.saveMessage}>{saveMessage}</Text>
+        ) : null}
       </View>
 
-      <Text style={homeS.sectionHeader}>צ׳ק־אין יומי ותחנת איפוס</Text>
+      <Text style={homeS.sectionHeader}>תחנת איפוס</Text>
 
-      <View style={homeS.row}>
-        <View style={homeS.bottomCard}>
-          <Text style={homeS.bottomTitle}>צ׳ק־אין</Text>
-          <Text style={homeS.bottomText}>
-            כמה שאלות קצרות שיעזרו לנו להתאים המלצות ומשימות להיום.
-          </Text>
+      <View style={homeS.bottomCard}>
+        <Text style={homeS.bottomTitle}>תחנת איפוס</Text>
+        <Text style={homeS.bottomText}>
+          משחקים ותרגילים קצרים להרגעה, מיקוד והתמודדות עם לחץ.
+        </Text>
 
-          <TouchableOpacity
-            style={homeS.checkinButton}
-            onPress={startDailyCheckin}
-            activeOpacity={0.85}
-          >
-            <Text style={homeS.checkinButtonText}>
-              התחל צ׳ק־אין וקבלת משימות
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={homeS.bottomCard}>
-          <Text style={homeS.bottomTitle}>תחנת איפוס</Text>
-          <Text style={homeS.bottomText}>
-            משחקים ותרגילים קצרים להרגעה, מיקוד והתמודדות עם לחץ.
-          </Text>
-
-          <View style={homeS.reserveBadge}>
-            <Text style={homeS.reserveBadgeText}>בקרוב</Text>
-          </View>
+        <View style={homeS.reserveBadge}>
+          <Text style={homeS.reserveBadgeText}>בקרוב</Text>
         </View>
       </View>
 
