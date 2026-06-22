@@ -1,6 +1,14 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { Text, TouchableOpacity, View } from 'react-native';
 import recStyles from './styles/recommStyles';
+
+type Task = {
+  title: string;
+  done: boolean;
+};
+
+const TASKS_STORAGE_KEY = 'hazlash_today_tasks';
 
 const checkinSummary = {
   energy: 'low',
@@ -37,13 +45,18 @@ export default function RecommendationScreen() {
   const router = useRouter();
   const dailyTasks = getDailyTasks();
 
-  const approveTasks = () => {
-    router.push({
-      pathname: '/',
-      params: {
-        aiTasks: JSON.stringify(dailyTasks),
-      },
-    });
+  const approveTasks = async () => {
+    const tasksToSave: Task[] = dailyTasks.map((title) => ({
+      title,
+      done: false,
+    }));
+
+    await AsyncStorage.setItem(
+      TASKS_STORAGE_KEY,
+      JSON.stringify(tasksToSave)
+    );
+
+    router.replace('/');
   };
 
   return (
@@ -66,13 +79,17 @@ export default function RecommendationScreen() {
         ))}
       </View>
 
-      <TouchableOpacity style={recStyles.button} onPress={approveTasks} activeOpacity={0.85}>
+      <TouchableOpacity
+        style={recStyles.button}
+        onPress={approveTasks}
+        activeOpacity={0.85}
+      >
         <Text style={recStyles.buttonText}>אישור והוספה למסך הבית</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={[recStyles.button, { marginTop: 12 }]}
-        onPress={() => router.push('/')}
+        onPress={() => router.replace('/')}
         activeOpacity={0.85}
       >
         <Text style={recStyles.buttonText}>חזרה בלי לשנות</Text>

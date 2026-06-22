@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import {
@@ -14,6 +15,17 @@ type Task = {
   done: boolean;
 };
 
+type DayHistory = {
+  date: string;
+  completed: number;
+  total: number;
+  percent: number;
+  tasks: Task[];
+};
+
+const TASKS_STORAGE_KEY = 'hazlash_today_tasks';
+const HISTORY_STORAGE_KEY = 'hazlash_day_history';
+
 const defaultTasks: Task[] = [
   { title: '30 דקות לימודים / עבודה', done: true },
   { title: 'אימון או הליכה קצרה', done: true },
@@ -26,12 +38,16 @@ export default function HomeScreen() {
   const router = useRouter();
   const { aiTasks } = useLocalSearchParams<{ aiTasks?: string }>();
 
+  const [todayTasks, setTodayTasks] = useState<Task[]>(defaultTasks);
+  const [customTask, setCustomTask] = useState('');
+  const [loaded, setLoaded] = useState(false);
+  const [saveMessage, setSaveMessage] = useState('');
+
   const tasksFromRecommendation = useMemo<Task[] | null>(() => {
     if (!aiTasks) return null;
 
     try {
       const parsed = JSON.parse(aiTasks);
-
       if (!Array.isArray(parsed)) return null;
 
       return parsed.map((title) => ({
@@ -43,14 +59,44 @@ export default function HomeScreen() {
     }
   }, [aiTasks]);
 
-  const [todayTasks, setTodayTasks] = useState<Task[]>(defaultTasks);
-  const [customTask, setCustomTask] = useState('');
+  useEffect(() => {
+    const loadTasks = async () => {
+      try {
+        const storedTasks = await AsyncStorage.getItem(TASKS_STORAGE_KEY);
+        if (storedTasks) {
+          setTodayTasks(JSON.parse(storedTasks));
+        }
+      } catch {
+        setTodayTasks(defaultTasks);
+      } finally {
+        setLoaded(true);
+      }
+    };
+
+    loadTasks();
+  }, []);
+
+useEffect(() => {
+  const applyRecommendedTasks = async () => {
+    if (!tasksFromRecommendation) return;
+
+    setTodayTasks(tasksFromRecommendation);
+    setLoaded(true);
+
+    await AsyncStorage.setItem(
+      TASKS_STORAGE_KEY,
+      JSON.stringify(tasksFromRecommendation)
+    );
+  };
+
+  applyRecommendedTasks();
+}, [tasksFromRecommendation]);
 
   useEffect(() => {
-    if (tasksFromRecommendation) {
-      setTodayTasks(tasksFromRecommendation);
-    }
-  }, [tasksFromRecommendation]);
+    if (!loaded) return;
+
+    AsyncStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(todayTasks));
+  }, [todayTasks, loaded]);
 
   const completedTasks = todayTasks.filter((task) => task.done).length;
   const totalTasks = todayTasks.length;
@@ -72,7 +118,6 @@ export default function HomeScreen() {
 
   const addCustomTask = () => {
     const cleanTitle = customTask.trim();
-
     if (!cleanTitle) return;
 
     setTodayTasks((currentTasks) => [
@@ -87,6 +132,41 @@ export default function HomeScreen() {
     setTodayTasks((currentTasks) =>
       currentTasks.filter((task) => task.title !== title)
     );
+  };
+
+  const finishDay = async () => {
+    const todaySummary: DayHistory = {
+      date: new Date().toISOString(),
+      completed: completedTasks,
+      total: totalTasks,
+      percent: progressPercent,
+      tasks: todayTasks,
+    };
+
+    try {
+      const storedHistory = await AsyncStorage.getItem(HISTORY_STORAGE_KEY);
+      const currentHistory: DayHistory[] = storedHistory
+        ? JSON.parse(storedHistory)
+        : [];
+
+      const updatedHistory = [todaySummary, ...currentHistory];
+
+      await AsyncStorage.setItem(
+        HISTORY_STORAGE_KEY,
+        JSON.stringify(updatedHistory)
+      );
+
+      await AsyncStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify([]));
+
+      setTodayTasks([]);
+      setSaveMessage(`היום נשמר בהצלחה: ${progressPercent}%`);
+
+      setTimeout(() => {
+        setSaveMessage('');
+      }, 3000);
+    } catch {
+      setSaveMessage('שגיאה בשמירת היום');
+    }
   };
 
   return (
@@ -129,6 +209,14 @@ export default function HomeScreen() {
           <Text style={homeS.progressLabel}>
             {completedTasks} מתוך {totalTasks} משימות
           </Text>
+
+          <TouchableOpacity
+            style={homeS.myDaysButton}
+            activeOpacity={0.85}
+            onPress={() => router.push('/daysHistory')}
+          >
+            <Text style={homeS.myDaysButtonText}>הימים שלי</Text>
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -188,6 +276,18 @@ export default function HomeScreen() {
           >
             <Text style={homeS.buttonText}>הוסף משימה ידנית</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={homeS.finishDayButton}
+            activeOpacity={0.85}
+            onPress={finishDay}
+          >
+            <Text style={homeS.finishDayText}>סיום יום ושמירת התקדמות</Text>
+          </TouchableOpacity>
+
+          {saveMessage ? (
+            <Text style={homeS.saveMessage}>{saveMessage}</Text>
+          ) : null}
         </View>
       </View>
 
@@ -205,7 +305,9 @@ export default function HomeScreen() {
             onPress={() => router.push('/checkin')}
             activeOpacity={0.85}
           >
-            <Text style={homeS.checkinButtonText}>התחל צ׳ק־אין וקבלת משימות</Text>
+            <Text style={homeS.checkinButtonText}>
+              התחל צ׳ק־אין וקבלת משימות
+            </Text>
           </TouchableOpacity>
         </View>
 
