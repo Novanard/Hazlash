@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import Svg, { Circle } from 'react-native-svg';
 import homeS from './styles/homeStyles';
 
 type Task = {
@@ -20,11 +21,23 @@ type DayHistory = {
   completed: number;
   total: number;
   percent: number;
+  sleepScore?: number;
   tasks: Task[];
+};
+
+type StoredFocusArea = {
+  id: string;
+  active: boolean;
+};
+
+type ProgressCircleProps = {
+  percent: number;
 };
 
 const TASKS_STORAGE_KEY = 'hazlash_today_tasks';
 const HISTORY_STORAGE_KEY = 'hazlash_day_history';
+const FOCUS_AREAS_STORAGE_KEY = 'hazlash_focus_areas';
+const SLEEP_HISTORY_STORAGE_KEY = 'hazlash_sleep_history';
 
 const defaultTasks: Task[] = [
   { title: '30 דקות לימודים / עבודה', done: true },
@@ -33,6 +46,47 @@ const defaultTasks: Task[] = [
   { title: 'הפסקה בלי מסכים', done: false },
   { title: 'שעת שינה קבועה', done: false },
 ];
+
+function ProgressCircle({ percent }: ProgressCircleProps) {
+  const size = 86;
+  const strokeWidth = 10;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const safePercent = Math.max(0, Math.min(percent, 100));
+  const strokeDashoffset =
+    circumference - (circumference * safePercent) / 100;
+
+  return (
+    <View style={homeS.progressCircle}>
+      <Svg width={size} height={size}>
+        <Circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke="#D8D0BF"
+          strokeWidth={strokeWidth}
+          fill="none"
+        />
+
+        <Circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke="#8EAA8C"
+          strokeWidth={strokeWidth}
+          fill="none"
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          strokeLinecap="round"
+          rotation="-90"
+          origin={`${size / 2}, ${size / 2}`}
+        />
+      </Svg>
+
+      <Text style={homeS.progressPercent}>{safePercent}%</Text>
+    </View>
+  );
+}
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -63,6 +117,7 @@ export default function HomeScreen() {
     const loadTasks = async () => {
       try {
         const storedTasks = await AsyncStorage.getItem(TASKS_STORAGE_KEY);
+
         if (storedTasks) {
           setTodayTasks(JSON.parse(storedTasks));
         }
@@ -100,6 +155,7 @@ export default function HomeScreen() {
 
   const completedTasks = todayTasks.filter((task) => task.done).length;
   const totalTasks = todayTasks.length;
+
   const progressPercent =
     totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
 
@@ -134,17 +190,60 @@ export default function HomeScreen() {
     );
   };
 
+  const startDailyCheckin = async () => {
+    try {
+      const storedFocusAreas = await AsyncStorage.getItem(
+        FOCUS_AREAS_STORAGE_KEY
+      );
+
+      const focusAreas: StoredFocusArea[] = storedFocusAreas
+        ? JSON.parse(storedFocusAreas)
+        : [];
+
+      const sleepIsActive = focusAreas.some(
+        (area) => area.id === 'sleep' && area.active
+      );
+
+      if (sleepIsActive) {
+        router.push('/sleepCheckin');
+        return;
+      }
+
+      router.push('/checkin');
+    } catch {
+      router.push('/checkin');
+    }
+  };
+
   const finishDay = async () => {
+    let sleepScore: number | undefined = undefined;
+
+    try {
+      const storedSleepHistory = await AsyncStorage.getItem(
+        SLEEP_HISTORY_STORAGE_KEY
+      );
+
+      const sleepHistory = storedSleepHistory
+        ? JSON.parse(storedSleepHistory)
+        : [];
+
+      if (Array.isArray(sleepHistory) && sleepHistory.length > 0) {
+        sleepScore = sleepHistory[0].score;
+      }
+    } catch {}
+
     const todaySummary: DayHistory = {
       date: new Date().toISOString(),
       completed: completedTasks,
       total: totalTasks,
       percent: progressPercent,
+      sleepScore,
       tasks: todayTasks,
     };
 
     try {
       const storedHistory = await AsyncStorage.getItem(HISTORY_STORAGE_KEY);
+
       const currentHistory: DayHistory[] = storedHistory
         ? JSON.parse(storedHistory)
         : [];
@@ -175,54 +274,56 @@ export default function HomeScreen() {
       contentContainerStyle={homeS.content}
       showsVerticalScrollIndicator={false}
     >
-      <View style={homeS.header}>
-        <Text style={homeS.bell}>⌕</Text>
-        <Text style={homeS.logo}>חזל״ש</Text>
+ <View style={homeS.header}>
+  <Text style={homeS.bell}>⌕</Text>
+  <Text style={homeS.logo}>חזל״ש</Text>
+</View>
+
+<Text style={homeS.title}>היום שלי</Text>
+<Text style={homeS.subtitle}>חזרה לשגרה בצעדים הדרגתיים.</Text>
+
+<View style={homeS.row}>
+  <View style={homeS.smallCard}>
+    <View>
+      <Text style={homeS.cardTitle}>מטרה שבועית</Text>
+      <Text style={homeS.goalTitle}>אימון 4 פעמים השבוע</Text>
+      <Text style={homeS.goalProgress}>3 / 4 הושלמו</Text>
+
+      <View style={homeS.goalBar}>
+        <View style={homeS.goalBarFill} />
       </View>
+    </View>
 
-      <Text style={homeS.title}>היום שלי</Text>
-      <Text style={homeS.subtitle}>חזרה לשגרה בצעדים הדרגתיים.</Text>
+    <TouchableOpacity
+      style={homeS.greenButton}
+      activeOpacity={0.85}
+      onPress={() => router.push('/focusAreas')}
+    >
+      <Text style={homeS.buttonText}>תחומי מיקוד</Text>
+    </TouchableOpacity>
+  </View>
 
-      <View style={homeS.row}>
-        <View style={homeS.smallCard}>
-          <Text style={homeS.cardTitle}>מטרה שבועית</Text>
-          <Text style={homeS.goalTitle}>אימון 4 פעמים השבוע</Text>
-          <Text style={homeS.goalProgress}>3 / 4 הושלמו</Text>
+  <View style={homeS.smallCard}>
+    <View>
+      <Text style={homeS.cardTitle}>היום שלי</Text>
+      <Text style={homeS.timeText}>{currentTime}</Text>
 
-          <View style={homeS.goalBar}>
-            <View style={homeS.goalBarFill} />
-          </View>
+      <ProgressCircle percent={progressPercent} />
 
-          <TouchableOpacity
-            style={homeS.greenButton}
-            activeOpacity={0.85}
-            onPress={() => router.push('/focusAreas')}
-          >
-            <Text style={homeS.buttonText}>תחומי מיקוד</Text>
-          </TouchableOpacity>
-        </View>
+      <Text style={homeS.progressLabel}>
+        {completedTasks} מתוך {totalTasks} משימות
+      </Text>
+    </View>
 
-        <View style={homeS.smallCard}>
-          <Text style={homeS.cardTitle}>היום שלי</Text>
-          <Text style={homeS.timeText}>{currentTime}</Text>
-
-          <View style={homeS.progressCircle}>
-            <Text style={homeS.progressPercent}>{progressPercent}%</Text>
-          </View>
-
-          <Text style={homeS.progressLabel}>
-            {completedTasks} מתוך {totalTasks} משימות
-          </Text>
-
-          <TouchableOpacity
-            style={homeS.myDaysButton}
-            activeOpacity={0.85}
-            onPress={() => router.push('/daysHistory')}
-          >
-            <Text style={homeS.myDaysButtonText}>הימים שלי</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+    <TouchableOpacity
+      style={homeS.greenButton}
+      activeOpacity={0.85}
+      onPress={() => router.push('/daysHistory')}
+    >
+      <Text style={homeS.buttonText}>הימים שלי</Text>
+    </TouchableOpacity>
+  </View>
+</View>
 
       <View style={homeS.wideCard}>
         <Text style={homeS.dots}>⋮</Text>
@@ -306,7 +407,7 @@ export default function HomeScreen() {
 
           <TouchableOpacity
             style={homeS.checkinButton}
-            onPress={() => router.push('/checkin')}
+            onPress={startDailyCheckin}
             activeOpacity={0.85}
           >
             <Text style={homeS.checkinButtonText}>

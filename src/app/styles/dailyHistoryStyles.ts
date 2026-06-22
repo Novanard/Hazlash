@@ -116,5 +116,12 @@ deleteText: {
   fontWeight: '900',
   fontSize: 13,
 },
+sleepScore: {
+  marginTop: 6,
+  fontSize: 13,
+  color: '#6F8F6D',
+  fontWeight: '800',
+  textAlign: 'right',
+},
 });
 export default dHistoryStyles;

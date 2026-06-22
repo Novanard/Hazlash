@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-const sleepSetupStyles = StyleSheet.create({
+const sleepCheckinStyles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: '#F4EFE4',
@@ -58,80 +58,50 @@ const sleepSetupStyles = StyleSheet.create({
     marginBottom: 16,
   },
 
-  cardTitle: {
+  question: {
     fontSize: 17,
     fontWeight: '800',
     color: '#34382F',
     textAlign: 'right',
-    marginBottom: 10,
+    marginBottom: 12,
   },
 
-  label: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#746A5D',
-    textAlign: 'right',
-    marginTop: 10,
-    marginBottom: 6,
-  },
-
-  input: {
-    backgroundColor: '#F4EFE4',
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#2F332C',
-  },
-
-  toggleButton: {
-    backgroundColor: '#F4EFE4',
-    borderRadius: 14,
-    paddingVertical: 14,
-    alignItems: 'center',
-  },
-
-  toggleButtonActive: {
-    backgroundColor: '#E6D8BD',
-  },
-
-  toggleText: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: '#746A5D',
-  },
-
-  toggleTextActive: {
-    color: '#6F8F6D',
-  },
-
-  reminderRow: {
+  optionsRow: {
     flexDirection: 'row-reverse',
     gap: 10,
-    marginTop: 8,
   },
 
-  minuteButton: {
+  optionButton: {
     flex: 1,
     backgroundColor: '#F4EFE4',
     borderRadius: 12,
-    paddingVertical: 12,
+    paddingVertical: 13,
     alignItems: 'center',
   },
 
-  minuteButtonActive: {
+  optionButtonActive: {
     backgroundColor: '#8EAA8C',
   },
 
-  minuteText: {
+  optionText: {
     color: '#746A5D',
-    fontWeight: '800',
     fontSize: 13,
+    fontWeight: '800',
   },
 
-  minuteTextActive: {
+  optionTextActive: {
     color: '#FFFFFF',
+  },
+
+  verticalOptions: {
+    gap: 10,
+  },
+
+  wideOption: {
+    backgroundColor: '#F4EFE4',
+    borderRadius: 12,
+    paddingVertical: 13,
+    alignItems: 'center',
   },
 
   saveButton: {
@@ -155,21 +125,6 @@ const sleepSetupStyles = StyleSheet.create({
     fontSize: 13,
     textAlign: 'center',
   },
-  turnOffButton: {
-  backgroundColor: '#FFFDF7',
-  borderRadius: 12,
-  paddingVertical: 14,
-  alignItems: 'center',
-  marginTop: 10,
-  borderWidth: 1,
-  borderColor: '#7B4F3A',
-},
-
-turnOffButtonText: {
-  color: '#7B4F3A',
-  fontWeight: '800',
-  fontSize: 13,
-},
 });
 
-export default sleepSetupStyles;
+export default sleepCheckinStyles;

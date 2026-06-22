@@ -14,6 +14,7 @@ type DayHistory = {
   completed: number;
   total: number;
   percent: number;
+  sleepScore?: number;
   tasks?: Task[];
 };
 
@@ -98,6 +99,11 @@ export default function DaysHistoryScreen() {
                   {day.completed} מתוך {day.total} משימות
                 </Text>
               </View>
+              {typeof day.sleepScore === 'number' ? (
+                <Text style={dHistoryStyles.sleepScore}>
+                  ציון שינה: {day.sleepScore}/100
+                </Text>
+              ) : null}
 
               <View style={dHistoryStyles.bar}>
                 <View

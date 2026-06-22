@@ -17,13 +17,13 @@ type SleepSettings = {
   reminderMinutesBefore: number;
 };
 
-const SLEEP_SETTINGS_STORAGE_KEY = 'hazlash_sleep_settings';
-const FOCUS_AREAS_STORAGE_KEY = 'hazlash_focus_areas';
-
 type StoredFocusArea = {
   id: string;
   active: boolean;
 };
+
+const SLEEP_SETTINGS_STORAGE_KEY = 'hazlash_sleep_settings';
+const FOCUS_AREAS_STORAGE_KEY = 'hazlash_focus_areas';
 
 const defaultSleepSettings: SleepSettings = {
   bedtime: '23:00',
@@ -36,6 +36,7 @@ export default function SleepSetupScreen() {
   const router = useRouter();
 
   const [settings, setSettings] = useState<SleepSettings>(defaultSleepSettings);
+  const [sleepTrackingActive, setSleepTrackingActive] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
 
   useEffect(() => {
@@ -46,8 +47,23 @@ export default function SleepSetupScreen() {
         if (stored) {
           setSettings(JSON.parse(stored));
         }
+
+        const storedFocusAreas = await AsyncStorage.getItem(
+          FOCUS_AREAS_STORAGE_KEY
+        );
+
+        const focusAreas: StoredFocusArea[] = storedFocusAreas
+          ? JSON.parse(storedFocusAreas)
+          : [];
+
+        const sleepIsActive = focusAreas.some(
+          (area) => area.id === 'sleep' && area.active
+        );
+
+        setSleepTrackingActive(sleepIsActive);
       } catch {
         setSettings(defaultSleepSettings);
+        setSleepTrackingActive(false);
       }
     };
 
@@ -64,59 +80,81 @@ export default function SleepSetupScreen() {
     }));
   };
 
-const saveSettings = async () => {
-  try {
-    // Save sleep settings
-    await AsyncStorage.setItem(
-      SLEEP_SETTINGS_STORAGE_KEY,
-      JSON.stringify(settings)
-    );
+  const saveSettings = async () => {
+    try {
+      await AsyncStorage.setItem(
+        SLEEP_SETTINGS_STORAGE_KEY,
+        JSON.stringify(settings)
+      );
 
-    // Load focus areas
-    const storedFocusAreas = await AsyncStorage.getItem(
-      FOCUS_AREAS_STORAGE_KEY
-    );
+      const storedFocusAreas = await AsyncStorage.getItem(
+        FOCUS_AREAS_STORAGE_KEY
+      );
 
-    const focusAreas: StoredFocusArea[] = storedFocusAreas
-      ? JSON.parse(storedFocusAreas)
-      : [];
+      const focusAreas: StoredFocusArea[] = storedFocusAreas
+        ? JSON.parse(storedFocusAreas)
+        : [];
 
-    // Activate sleep area
-    const sleepExists = focusAreas.some(
-      (area) => area.id === 'sleep'
-    );
+      const sleepExists = focusAreas.some((area) => area.id === 'sleep');
 
-    const updatedFocusAreas = sleepExists
-      ? focusAreas.map((area) =>
-          area.id === 'sleep'
-            ? { ...area, active: true }
-            : area
-        )
-      : [
-          ...focusAreas,
-          {
-            id: 'sleep',
-            active: true,
-          },
-        ];
+      const updatedFocusAreas = sleepExists
+        ? focusAreas.map((area) =>
+            area.id === 'sleep' ? { ...area, active: true } : area
+          )
+        : [...focusAreas, { id: 'sleep', active: true }];
 
-    await AsyncStorage.setItem(
-      FOCUS_AREAS_STORAGE_KEY,
-      JSON.stringify(updatedFocusAreas)
-    );
+      await AsyncStorage.setItem(
+        FOCUS_AREAS_STORAGE_KEY,
+        JSON.stringify(updatedFocusAreas)
+      );
 
-    setSaveMessage('הגדרות השינה נשמרו בהצלחה');
+      setSleepTrackingActive(true);
+      setSaveMessage('הגדרות השינה נשמרו בהצלחה');
 
-    setTimeout(() => {
-      setSaveMessage('');
-      router.back();
-    }, 1200);
-  } catch (error) {
-    console.log(error);
+      setTimeout(() => {
+        setSaveMessage('');
+        router.back();
+      }, 1200);
+    } catch (error) {
+      console.log(error);
+      setSaveMessage('שגיאה בשמירת ההגדרות');
+    }
+  };
 
-    setSaveMessage('שגיאה בשמירת ההגדרות');
-  }
-};
+  const turnOffSleepTracking = async () => {
+    try {
+      const storedFocusAreas = await AsyncStorage.getItem(
+        FOCUS_AREAS_STORAGE_KEY
+      );
+
+      const focusAreas: StoredFocusArea[] = storedFocusAreas
+        ? JSON.parse(storedFocusAreas)
+        : [];
+
+      const updatedFocusAreas = focusAreas.some((area) => area.id === 'sleep')
+        ? focusAreas.map((area) =>
+            area.id === 'sleep' ? { ...area, active: false } : area
+          )
+        : [...focusAreas, { id: 'sleep', active: false }];
+
+      await AsyncStorage.setItem(
+        FOCUS_AREAS_STORAGE_KEY,
+        JSON.stringify(updatedFocusAreas)
+      );
+
+      setSleepTrackingActive(false);
+      setSaveMessage('מעקב השינה כובה');
+
+      setTimeout(() => {
+        setSaveMessage('');
+        router.back();
+      }, 1200);
+    } catch (error) {
+      console.log(error);
+      setSaveMessage('שגיאה בכיבוי מעקב השינה');
+    }
+  };
+
   return (
     <ScrollView
       style={sleepS.screen}
@@ -220,6 +258,16 @@ const saveSettings = async () => {
       >
         <Text style={sleepS.saveButtonText}>שמירת הגדרות שינה</Text>
       </TouchableOpacity>
+
+      {sleepTrackingActive ? (
+        <TouchableOpacity
+          style={sleepS.turnOffButton}
+          activeOpacity={0.85}
+          onPress={turnOffSleepTracking}
+        >
+          <Text style={sleepS.turnOffButtonText}>כיבוי מעקב שינה</Text>
+        </TouchableOpacity>
+      ) : null}
 
       {saveMessage ? (
         <Text style={sleepS.saveMessage}>{saveMessage}</Text>
