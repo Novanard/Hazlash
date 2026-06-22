@@ -404,13 +404,15 @@ export default function HomeScreen() {
             </View>
           </>
         ) : (
-          <TouchableOpacity
-            style={homeS.fullButton}
-            activeOpacity={0.85}
-            onPress={startDailyCheckin}
-          >
-            <Text style={homeS.buttonText}>התחלת היום וקבלת משימות</Text>
-          </TouchableOpacity>
+<TouchableOpacity
+  style={[homeS.fullButton, homeS.bottomButton]}
+  activeOpacity={0.85}
+  onPress={startDailyCheckin}
+>
+  <Text style={homeS.buttonText}>
+    התחלת היום וקבלת משימות
+  </Text>
+</TouchableOpacity>
         )}
 
         {saveMessage ? (

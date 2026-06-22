@@ -359,5 +359,8 @@ myDaysButtonText: {
   fontSize: 12,
   fontWeight: '900',
 },
+bottomButton: {
+  marginTop: 'auto',
+},
 });
 export default homeS;
