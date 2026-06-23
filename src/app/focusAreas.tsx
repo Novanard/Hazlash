@@ -118,16 +118,6 @@ export default function FocusAreasScreen() {
     saveFocusAreas();
   }, [focusAreas, loaded]);
 
-  const toggleFocusArea = (id: string) => {
-    setFocusAreas((currentAreas) =>
-      currentAreas.map((area) =>
-        area.id === id && area.available
-          ? { ...area, active: !area.active }
-          : area
-      )
-    );
-  };
-
   const handleAreaPress = (area: FocusArea) => {
     if (!area.available) return;
 
@@ -137,7 +127,8 @@ export default function FocusAreasScreen() {
     }
 
     if (area.id === 'sports') {
-      toggleFocusArea(area.id);
+      router.push('/sportsSetup');
+      return;
     }
   };
 

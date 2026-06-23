@@ -362,5 +362,63 @@ myDaysButtonText: {
 bottomButton: {
   marginTop: 'auto',
 },
+workoutQuestionCard: {
+  marginTop: 10,
+  backgroundColor: '#FFFDF7',
+  borderRadius: 13,
+  padding: 14,
+  borderWidth: 1,
+  borderColor: '#8EAA8C',
+},
+
+workoutQuestionTitle: {
+  color: '#2F332C',
+  fontWeight: '800',
+  fontSize: 13,
+  textAlign: 'right',
+  marginBottom: 10,
+},
+
+workoutQuestionRow: {
+  flexDirection: 'row-reverse',
+  gap: 10,
+},
+
+workoutYesButton: {
+  flex: 1,
+  backgroundColor: '#8EAA8C',
+  borderRadius: 12,
+  paddingVertical: 12,
+  alignItems: 'center',
+},
+
+workoutNoButton: {
+  flex: 1,
+  backgroundColor: '#FFFDF7',
+  borderRadius: 12,
+  paddingVertical: 12,
+  alignItems: 'center',
+  borderWidth: 1,
+  borderColor: '#8EAA8C',
+},
+streakContainer: {
+  marginTop: 10,
+  backgroundColor: '#FFFDF7',
+  borderRadius: 10,
+  paddingVertical: 8,
+  paddingHorizontal: 12,
+},
+
+streakText: {
+  textAlign: 'center',
+  color: '#6F8F6D',
+  fontWeight: '800',
+  fontSize: 13,
+},
+streakDivider: {
+  height: 1,
+  backgroundColor: '#E2D8C8',
+  marginVertical: 10,
+},
 });
 export default homeS;

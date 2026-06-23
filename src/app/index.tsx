@@ -1,6 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import {
+  useFocusEffect,
+  useLocalSearchParams,
+  useRouter,
+} from 'expo-router';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ScrollView,
   Text,
@@ -22,12 +26,17 @@ type DayHistory = {
   total: number;
   percent: number;
   sleepScore?: number;
+  workoutDone?: boolean;
   tasks: Task[];
 };
 
 type StoredFocusArea = {
   id: string;
   active: boolean;
+};
+
+type SportsSettings = {
+  weeklyGoal: number;
 };
 
 type ProgressCircleProps = {
@@ -38,6 +47,7 @@ const TASKS_STORAGE_KEY = 'hazlash_today_tasks';
 const HISTORY_STORAGE_KEY = 'hazlash_day_history';
 const FOCUS_AREAS_STORAGE_KEY = 'hazlash_focus_areas';
 const SLEEP_HISTORY_STORAGE_KEY = 'hazlash_sleep_history';
+const SPORTS_SETTINGS_STORAGE_KEY = 'hazlash_sports_settings';
 
 const defaultTasks: Task[] = [];
 
@@ -90,6 +100,13 @@ export default function HomeScreen() {
   const [customTask, setCustomTask] = useState('');
   const [loaded, setLoaded] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
+  const [showWorkoutQuestion, setShowWorkoutQuestion] = useState(false);
+
+  const [sleepActive, setSleepActive] = useState(false);
+  const [sportsActive, setSportsActive] = useState(false);
+  const [sportsWeeklyGoal, setSportsWeeklyGoal] = useState(4);
+  const [workoutsThisWeek, setWorkoutsThisWeek] = useState(0);
+  const [activeDayStreak, setActiveDayStreak] = useState(0);
 
   const dayIsActive = todayTasks.length > 0;
 
@@ -108,6 +125,125 @@ export default function HomeScreen() {
       return null;
     }
   }, [aiTasks]);
+
+  const weeklyProgressPercent =
+    sportsWeeklyGoal === 0
+      ? 0
+      : Math.min(Math.round((workoutsThisWeek / sportsWeeklyGoal) * 100), 100);
+
+  const getDateKey = (dateString: string) => {
+    const date = new Date(dateString);
+
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+      2,
+      '0'
+    )}-${String(date.getDate()).padStart(2, '0')}`;
+  };
+
+  const getStartOfWeek = () => {
+    const now = new Date();
+    const start = new Date(now);
+
+    start.setHours(0, 0, 0, 0);
+    start.setDate(start.getDate() - start.getDay());
+
+    return start;
+  };
+
+  const calculateActiveDayStreak = (history: DayHistory[]) => {
+    if (history.length === 0) return 0;
+
+    const uniqueDates = Array.from(
+      new Set(history.map((day) => getDateKey(day.date)))
+    ).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+
+    if (uniqueDates.length === 0) return 0;
+
+    let streak = 0;
+    const dateSet = new Set(uniqueDates);
+    const currentDate = new Date(uniqueDates[0]);
+
+    while (true) {
+      const key = `${currentDate.getFullYear()}-${String(
+        currentDate.getMonth() + 1
+      ).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+
+      if (!dateSet.has(key)) break;
+
+      streak += 1;
+      currentDate.setDate(currentDate.getDate() - 1);
+    }
+
+    return streak;
+  };
+
+  const getFocusAreas = async () => {
+    const storedFocusAreas = await AsyncStorage.getItem(
+      FOCUS_AREAS_STORAGE_KEY
+    );
+
+    const focusAreas: StoredFocusArea[] = storedFocusAreas
+      ? JSON.parse(storedFocusAreas)
+      : [];
+
+    return Array.isArray(focusAreas) ? focusAreas : [];
+  };
+
+  const loadDashboardStats = async () => {
+    try {
+      const focusAreas = await getFocusAreas();
+
+      const sleepIsActive = focusAreas.some(
+        (area) => area.id === 'sleep' && area.active
+      );
+
+      const sportsIsActive = focusAreas.some(
+        (area) => area.id === 'sports' && area.active
+      );
+
+      setSleepActive(sleepIsActive);
+      setSportsActive(sportsIsActive);
+
+      const storedSportsSettings = await AsyncStorage.getItem(
+        SPORTS_SETTINGS_STORAGE_KEY
+      );
+
+      const sportsSettings: SportsSettings = storedSportsSettings
+        ? JSON.parse(storedSportsSettings)
+        : { weeklyGoal: 4 };
+
+      setSportsWeeklyGoal(sportsSettings.weeklyGoal || 4);
+
+      const storedHistory = await AsyncStorage.getItem(HISTORY_STORAGE_KEY);
+
+      const history: DayHistory[] = storedHistory
+        ? JSON.parse(storedHistory)
+        : [];
+
+      const safeHistory = Array.isArray(history) ? history : [];
+      const startOfWeek = getStartOfWeek();
+
+      const weeklyWorkoutCount = safeHistory.filter((day) => {
+        const dayDate = new Date(day.date);
+        return day.workoutDone === true && dayDate >= startOfWeek;
+      }).length;
+
+      setWorkoutsThisWeek(weeklyWorkoutCount);
+      setActiveDayStreak(calculateActiveDayStreak(safeHistory));
+    } catch {
+      setSleepActive(false);
+      setSportsActive(false);
+      setSportsWeeklyGoal(4);
+      setWorkoutsThisWeek(0);
+      setActiveDayStreak(0);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      loadDashboardStats();
+    }, [])
+  );
 
   useEffect(() => {
     const loadTasks = async () => {
@@ -188,13 +324,7 @@ export default function HomeScreen() {
 
   const startDailyCheckin = async () => {
     try {
-      const storedFocusAreas = await AsyncStorage.getItem(
-        FOCUS_AREAS_STORAGE_KEY
-      );
-
-      const focusAreas: StoredFocusArea[] = storedFocusAreas
-        ? JSON.parse(storedFocusAreas)
-        : [];
+      const focusAreas = await getFocusAreas();
 
       const sleepIsActive = focusAreas.some(
         (area) => area.id === 'sleep' && area.active
@@ -211,9 +341,7 @@ export default function HomeScreen() {
     }
   };
 
-  const finishDay = async () => {
-    let sleepScore: number | undefined = undefined;
-
+  const getLatestSleepScore = async () => {
     try {
       const storedSleepHistory = await AsyncStorage.getItem(
         SLEEP_HISTORY_STORAGE_KEY
@@ -224,9 +352,26 @@ export default function HomeScreen() {
         : [];
 
       if (Array.isArray(sleepHistory) && sleepHistory.length > 0) {
-        sleepScore = sleepHistory[0].score;
+        return sleepHistory[0].score;
       }
-    } catch {}
+
+      return undefined;
+    } catch {
+      return undefined;
+    }
+  };
+
+  const handleFinishDayPress = async () => {
+    if (sportsActive) {
+      setShowWorkoutQuestion(true);
+      return;
+    }
+
+    saveDay(undefined);
+  };
+
+  const saveDay = async (workoutDone?: boolean) => {
+    const sleepScore = await getLatestSleepScore();
 
     const todaySummary: DayHistory = {
       date: new Date().toISOString(),
@@ -234,6 +379,7 @@ export default function HomeScreen() {
       total: totalTasks,
       percent: progressPercent,
       sleepScore,
+      workoutDone,
       tasks: todayTasks,
     };
 
@@ -254,6 +400,9 @@ export default function HomeScreen() {
       await AsyncStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify([]));
 
       setTodayTasks([]);
+      setShowWorkoutQuestion(false);
+      await loadDashboardStats();
+
       setSaveMessage(`היום נשמר בהצלחה: ${progressPercent}%`);
 
       setTimeout(() => {
@@ -281,13 +430,46 @@ export default function HomeScreen() {
       <View style={homeS.row}>
         <View style={homeS.smallCard}>
           <View>
-            <Text style={homeS.cardTitle}>מטרה שבועית</Text>
-            <Text style={homeS.goalTitle}>אימון 4 פעמים השבוע</Text>
-            <Text style={homeS.goalProgress}>3 / 4 הושלמו</Text>
+            <Text style={homeS.cardTitle}>השבוע שלי</Text>
 
-            <View style={homeS.goalBar}>
-              <View style={homeS.goalBarFill} />
-            </View>
+            <Text style={homeS.goalTitle}>רצף שימוש באפליקציה</Text>
+            <Text style={homeS.goalProgress}>
+              {activeDayStreak === 1
+                ? 'יום אחד ברצף'
+                : `${activeDayStreak} ימים ברצף`}
+            </Text>
+
+            <View style={homeS.streakDivider} />
+
+            <Text style={homeS.goalTitle}>מעקב שינה</Text>
+            <Text style={homeS.goalProgress}>
+              {sleepActive ? 'פעיל' : 'לא פעיל'}
+            </Text>
+
+            <View style={homeS.streakDivider} />
+
+            <Text style={homeS.goalTitle}>
+              {sportsActive
+                ? `אימון ${sportsWeeklyGoal} פעמים השבוע`
+                : 'מעקב פעילות לא פעיל'}
+            </Text>
+
+            <Text style={homeS.goalProgress}>
+              {sportsActive
+                ? `${workoutsThisWeek} מתוך ${sportsWeeklyGoal} אימונים הושלמו`
+                : 'אפשר להפעיל מעקב דרך תחומי מיקוד'}
+            </Text>
+
+            {sportsActive ? (
+              <View style={homeS.goalBar}>
+                <View
+                  style={[
+                    homeS.goalBarFill,
+                    { width: `${weeklyProgressPercent}%` },
+                  ]}
+                />
+              </View>
+            ) : null}
           </View>
 
           <TouchableOpacity
@@ -323,7 +505,9 @@ export default function HomeScreen() {
 
       <View style={homeS.wideCard}>
         <Text style={homeS.dots}>⋮</Text>
+
         <Text style={homeS.sectionTitle}>המשימות של היום</Text>
+
         <Text style={homeS.cardText}>
           {dayIsActive
             ? 'מטרות קטנות וריאליות שעוזרות לחזור לשגרה בלי עומס מיותר.'
@@ -392,27 +576,51 @@ export default function HomeScreen() {
                 <Text style={homeS.buttonText}>הוסף משימה ידנית</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                style={homeS.finishDayButton}
-                activeOpacity={0.85}
-                onPress={finishDay}
-              >
-                <Text style={homeS.finishDayText}>
-                  סיום יום ושמירת התקדמות
-                </Text>
-              </TouchableOpacity>
+              {showWorkoutQuestion ? (
+                <View style={homeS.workoutQuestionCard}>
+                  <Text style={homeS.workoutQuestionTitle}>
+                    האם ביצעת פעילות גופנית היום?
+                  </Text>
+
+                  <View style={homeS.workoutQuestionRow}>
+                    <TouchableOpacity
+                      style={homeS.workoutYesButton}
+                      activeOpacity={0.85}
+                      onPress={() => saveDay(true)}
+                    >
+                      <Text style={homeS.buttonText}>כן</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={homeS.workoutNoButton}
+                      activeOpacity={0.85}
+                      onPress={() => saveDay(false)}
+                    >
+                      <Text style={homeS.finishDayText}>לא</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  style={homeS.finishDayButton}
+                  activeOpacity={0.85}
+                  onPress={handleFinishDayPress}
+                >
+                  <Text style={homeS.finishDayText}>
+                    סיום יום ושמירת התקדמות
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
           </>
         ) : (
-<TouchableOpacity
-  style={[homeS.fullButton, homeS.bottomButton]}
-  activeOpacity={0.85}
-  onPress={startDailyCheckin}
->
-  <Text style={homeS.buttonText}>
-    התחלת היום וקבלת משימות
-  </Text>
-</TouchableOpacity>
+          <TouchableOpacity
+            style={[homeS.fullButton, homeS.bottomButton]}
+            activeOpacity={0.85}
+            onPress={startDailyCheckin}
+          >
+            <Text style={homeS.buttonText}>התחלת היום וקבלת משימות</Text>
+          </TouchableOpacity>
         )}
 
         {saveMessage ? (

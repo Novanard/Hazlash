@@ -91,7 +91,7 @@ export default function DaysHistoryScreen() {
                 </TouchableOpacity>
 
                 <Text style={dHistoryStyles.date}>{formatDate(day.date)}</Text>
-              </View>~
+              </View>
 
               <View style={dHistoryStyles.row}>
                 <Text style={dHistoryStyles.percent}>{day.percent}%</Text>
