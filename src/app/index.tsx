@@ -640,13 +640,6 @@ export default function HomeScreen() {
           <Text style={homeS.reserveBadgeText}>בקרוב</Text>
         </View>
       </View>
-
-      <View style={homeS.navbar}>
-        <Text style={homeS.navItem}>⌂</Text>
-        <Text style={homeS.navItem}>◷</Text>
-        <Text style={homeS.navItem}>☷</Text>
-        <Text style={homeS.navActive}>⌂</Text>
-      </View>
     </ScrollView>
   );
 }

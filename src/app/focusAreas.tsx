@@ -182,11 +182,6 @@ export default function FocusAreasScreen() {
           </TouchableOpacity>
         ))}
       </View>
-
-      <Text style={focusS.note}>
-        בשלב הבא, שינה ופעילות גופנית יקבלו הגדרות משלהן. לדוגמה: בשינה נגדיר
-        שעת שינה, שעת קימה ותזכורות.
-      </Text>
     </ScrollView>
   );
 }
