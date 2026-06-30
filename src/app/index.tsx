@@ -436,7 +436,7 @@ export default function HomeScreen() {
       <View style={homeS.row}>
         <View style={homeS.smallCard}>
           <View>
-            <Text style={homeS.cardTitle}>השבוע שלי</Text>
+            <Text style={homeS.cardTitle}>הגדרות</Text>
 
             <Text style={homeS.goalTitle}>רצף שימוש באפליקציה</Text>
             <Text style={homeS.goalProgress}>
