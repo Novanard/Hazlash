@@ -1,13 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import sportsS from './styles/sportsSetupStyles';
+import { useTheme } from '@/hooks/use-theme';
+import createSportsSetupStyles from './styles/sportsSetupStyles';
 type SportsSettings = {
   weeklyGoal: number;
 };
@@ -26,6 +27,8 @@ const defaultSportsSettings: SportsSettings = {
 
 export default function SportsSetupScreen() {
   const router = useRouter();
+  const theme = useTheme();
+  const sportsS = useMemo(() => createSportsSetupStyles(theme), [theme]);
 
   const [settings, setSettings] = useState<SportsSettings>(
     defaultSportsSettings

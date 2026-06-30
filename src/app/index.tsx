@@ -13,7 +13,8 @@ import {
   View,
 } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
-import homeS from './styles/homeStyles';
+import { useTheme } from '@/hooks/use-theme';
+import createHomeStyles from './styles/homeStyles';
 
 type Task = {
   title: string;
@@ -41,6 +42,9 @@ type SportsSettings = {
 
 type ProgressCircleProps = {
   percent: number;
+  styles: ReturnType<typeof createHomeStyles>;
+  trackColor: string;
+  progressColor: string;
 };
 
 const TASKS_STORAGE_KEY = 'hazlash_today_tasks';
@@ -51,7 +55,7 @@ const SPORTS_SETTINGS_STORAGE_KEY = 'hazlash_sports_settings';
 
 const defaultTasks: Task[] = [];
 
-function ProgressCircle({ percent }: ProgressCircleProps) {
+function ProgressCircle({ percent, styles, trackColor, progressColor }: ProgressCircleProps) {
   const size = 86;
   const strokeWidth = 10;
   const radius = (size - strokeWidth) / 2;
@@ -61,13 +65,13 @@ function ProgressCircle({ percent }: ProgressCircleProps) {
     circumference - (circumference * safePercent) / 100;
 
   return (
-    <View style={homeS.progressCircle}>
+    <View style={styles.progressCircle}>
       <Svg width={size} height={size}>
         <Circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke="#D8D0BF"
+          stroke={trackColor}
           strokeWidth={strokeWidth}
           fill="none"
         />
@@ -76,7 +80,7 @@ function ProgressCircle({ percent }: ProgressCircleProps) {
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke="#8EAA8C"
+          stroke={progressColor}
           strokeWidth={strokeWidth}
           fill="none"
           strokeDasharray={circumference}
@@ -87,13 +91,15 @@ function ProgressCircle({ percent }: ProgressCircleProps) {
         />
       </Svg>
 
-      <Text style={homeS.progressPercent}>{safePercent}%</Text>
+      <Text style={styles.progressPercent}>{safePercent}%</Text>
     </View>
   );
 }
 
 export default function HomeScreen() {
   const router = useRouter();
+  const theme = useTheme();
+  const homeS = useMemo(() => createHomeStyles(theme), [theme]);
   const { aiTasks } = useLocalSearchParams<{ aiTasks?: string }>();
 
   const [todayTasks, setTodayTasks] = useState<Task[]>(defaultTasks);
@@ -486,7 +492,12 @@ export default function HomeScreen() {
             <Text style={homeS.cardTitle}>היום שלי</Text>
             <Text style={homeS.timeText}>{currentTime}</Text>
 
-            <ProgressCircle percent={progressPercent} />
+            <ProgressCircle
+              percent={progressPercent}
+              styles={homeS}
+              trackColor={theme.border}
+              progressColor={theme.accent}
+            />
 
             <Text style={homeS.progressLabel}>
               {completedTasks} מתוך {totalTasks} משימות
@@ -563,7 +574,7 @@ export default function HomeScreen() {
                 value={customTask}
                 onChangeText={setCustomTask}
                 placeholder="הוסף משימה משלך"
-                placeholderTextColor="#8B7D68"
+                placeholderTextColor={theme.textSecondary}
                 textAlign="right"
                 style={homeS.taskInput}
               />

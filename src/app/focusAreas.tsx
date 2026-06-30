@@ -1,13 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import focusS from './styles/focusAreasStyles';
+import { useTheme } from '@/hooks/use-theme';
+import createFocusAreasStyles from './styles/focusAreasStyles';
 
 type FocusArea = {
   id: string;
@@ -57,6 +58,8 @@ const defaultFocusAreas: FocusArea[] = [
 
 export default function FocusAreasScreen() {
   const router = useRouter();
+  const theme = useTheme();
+  const focusS = useMemo(() => createFocusAreasStyles(theme), [theme]);
 
   const [focusAreas, setFocusAreas] = useState<FocusArea[]>(defaultFocusAreas);
   const [loaded, setLoaded] = useState(false);
@@ -139,10 +142,6 @@ export default function FocusAreasScreen() {
       showsVerticalScrollIndicator={false}
     >
       <View style={focusS.header}>
-        <TouchableOpacity onPress={() => router.back()} activeOpacity={0.75}>
-          <Text style={focusS.backText}>חזור</Text>
-        </TouchableOpacity>
-
         <Text style={focusS.logo}>חזל״ש</Text>
       </View>
 
@@ -182,6 +181,14 @@ export default function FocusAreasScreen() {
           </TouchableOpacity>
         ))}
       </View>
+
+      <TouchableOpacity
+        style={focusS.backButton}
+        activeOpacity={0.85}
+        onPress={() => router.back()}
+      >
+        <Text style={focusS.backButtonText}>חזרה</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }

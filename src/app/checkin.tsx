@@ -1,33 +1,35 @@
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import checkinStyles from './styles/checkinStyles';
+import { useTheme } from '@/hooks/use-theme';
+import createCheckinStyles from './styles/checkinStyles';
 type OptionGroupProps = {
   title: string;
   subtitle: string;
   options: string[];
   selected: string;
+  styles: ReturnType<typeof createCheckinStyles>;
   onSelect: (value: string) => void;
 };
 
-function OptionGroup({ title, subtitle, options, selected, onSelect }: OptionGroupProps) {
+function OptionGroup({ title, subtitle, options, selected, styles, onSelect }: OptionGroupProps) {
   return (
-    <View style={checkinStyles.card}>
-      <Text style={checkinStyles.questionTitle}>{title}</Text>
-      <Text style={checkinStyles.questionSubtitle}>{subtitle}</Text>
+    <View style={styles.card}>
+      <Text style={styles.questionTitle}>{title}</Text>
+      <Text style={styles.questionSubtitle}>{subtitle}</Text>
 
-      <View style={checkinStyles.optionsRow}>
+      <View style={styles.optionsRow}>
         {options.map((option) => {
           const isSelected = selected === option;
 
           return (
             <TouchableOpacity
               key={option}
-              style={[checkinStyles.option, isSelected && checkinStyles.optionSelected]}
+              style={[styles.option, isSelected && styles.optionSelected]}
               onPress={() => onSelect(option)}
               activeOpacity={0.85}
             >
-              <Text style={[checkinStyles.optionText, isSelected && checkinStyles.optionTextSelected]}>
+              <Text style={[styles.optionText, isSelected && styles.optionTextSelected]}>
                 {option}
               </Text>
             </TouchableOpacity>
@@ -40,6 +42,8 @@ function OptionGroup({ title, subtitle, options, selected, onSelect }: OptionGro
 
 export default function CheckInScreen() {
   const router = useRouter();
+  const theme = useTheme();
+  const checkinStyles = useMemo(() => createCheckinStyles(theme), [theme]);
 
   const [sleep, setSleep] = useState('סביר');
   const [focus, setFocus] = useState('בינוני');
@@ -61,6 +65,7 @@ export default function CheckInScreen() {
         subtitle="איך ישנת הלילה?"
         options={['חלש', 'סביר', 'טוב']}
         selected={sleep}
+        styles={checkinStyles}
         onSelect={setSleep}
       />
 
@@ -69,6 +74,7 @@ export default function CheckInScreen() {
         subtitle="כמה קל לך להתרכז היום?"
         options={['קשה', 'בינוני', 'טוב']}
         selected={focus}
+        styles={checkinStyles}
         onSelect={setFocus}
       />
 
@@ -77,6 +83,7 @@ export default function CheckInScreen() {
         subtitle="כמה אנרגיה יש לך היום?"
         options={['נמוכה', 'בינונית', 'גבוהה']}
         selected={energy}
+        styles={checkinStyles}
         onSelect={setEnergy}
       />
 
@@ -85,6 +92,7 @@ export default function CheckInScreen() {
         subtitle="כמה עומס או לחץ אתה מרגיש?"
         options={['נמוך', 'בינוני', 'גבוה']}
         selected={stress}
+        styles={checkinStyles}
         onSelect={setStress}
       />
 

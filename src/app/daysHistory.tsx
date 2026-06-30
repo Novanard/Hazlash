@@ -1,8 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import dHistoryStyles from './styles/dailyHistoryStyles';
+import { useTheme } from '@/hooks/use-theme';
+import createDHistoryStyles from './styles/dailyHistoryStyles';
 
 type Task = {
   title: string;
@@ -22,6 +23,8 @@ const HISTORY_STORAGE_KEY = 'hazlash_day_history';
 
 export default function DaysHistoryScreen() {
   const router = useRouter();
+  const theme = useTheme();
+  const dHistoryStyles = useMemo(() => createDHistoryStyles(theme), [theme]);
   const [history, setHistory] = useState<DayHistory[]>([]);
 
   useEffect(() => {

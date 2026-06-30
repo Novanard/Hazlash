@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ScrollView,
   Text,
@@ -8,7 +8,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import sleepS from './styles/sleepSetupStyles';
+import { useTheme } from '@/hooks/use-theme';
+import createSleepSetupStyles from './styles/sleepSetupStyles';
 
 type SleepSettings = {
   bedtime: string;
@@ -34,6 +35,8 @@ const defaultSleepSettings: SleepSettings = {
 
 export default function SleepSetupScreen() {
   const router = useRouter();
+  const theme = useTheme();
+  const sleepS = useMemo(() => createSleepSetupStyles(theme), [theme]);
 
   const [settings, setSettings] = useState<SleepSettings>(defaultSleepSettings);
   const [sleepTrackingActive, setSleepTrackingActive] = useState(false);
@@ -184,7 +187,7 @@ export default function SleepSetupScreen() {
           value={settings.bedtime}
           onChangeText={(text) => updateField('bedtime', text)}
           placeholder="23:00"
-          placeholderTextColor="#8B7D68"
+          placeholderTextColor={theme.textSecondary}
           textAlign="center"
           style={sleepS.input}
         />
@@ -194,7 +197,7 @@ export default function SleepSetupScreen() {
           value={settings.wakeupTime}
           onChangeText={(text) => updateField('wakeupTime', text)}
           placeholder="07:00"
-          placeholderTextColor="#8B7D68"
+          placeholderTextColor={theme.textSecondary}
           textAlign="center"
           style={sleepS.input}
         />

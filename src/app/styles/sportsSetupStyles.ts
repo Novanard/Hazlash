@@ -1,9 +1,12 @@
+import { Colors } from '@/constants/theme';
 import { StyleSheet } from 'react-native';
 
-const sportsSetupStyles = StyleSheet.create({
+type AppTheme = (typeof Colors)[keyof typeof Colors];
+
+const createSportsSetupStyles = (theme: AppTheme) => StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#F4EFE4',
+    backgroundColor: theme.background,
   },
 
   content: {
@@ -19,7 +22,7 @@ const sportsSetupStyles = StyleSheet.create({
   },
 
   backText: {
-    color: '#6F8F6D',
+    color: theme.accentDark,
     fontSize: 16,
     fontWeight: '800',
   },
@@ -27,20 +30,20 @@ const sportsSetupStyles = StyleSheet.create({
   logo: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#2F332C',
+    color: theme.text,
   },
 
   title: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#2F332C',
+    color: theme.text,
     textAlign: 'right',
     marginTop: 24,
   },
 
   subtitle: {
     fontSize: 13,
-    color: '#8A8174',
+    color: theme.textSecondary,
     textAlign: 'right',
     marginTop: 4,
     marginBottom: 18,
@@ -48,10 +51,10 @@ const sportsSetupStyles = StyleSheet.create({
   },
 
   card: {
-    backgroundColor: '#FFFDF7',
+    backgroundColor: theme.surface,
     borderRadius: 22,
     padding: 16,
-    shadowColor: '#000000',
+    shadowColor: theme.shadow,
     shadowOpacity: 0.08,
     shadowRadius: 12,
     elevation: 3,
@@ -61,7 +64,7 @@ const sportsSetupStyles = StyleSheet.create({
   cardTitle: {
     fontSize: 17,
     fontWeight: '800',
-    color: '#34382F',
+    color: theme.text,
     textAlign: 'right',
     marginBottom: 10,
   },
@@ -69,7 +72,7 @@ const sportsSetupStyles = StyleSheet.create({
   label: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#746A5D',
+    color: theme.textSecondary,
     textAlign: 'right',
     marginTop: 4,
     marginBottom: 10,
@@ -83,36 +86,36 @@ const sportsSetupStyles = StyleSheet.create({
 
   goalButton: {
     flex: 1,
-    backgroundColor: '#F4EFE4',
+    backgroundColor: theme.input,
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: 'center',
   },
 
   goalButtonActive: {
-    backgroundColor: '#8EAA8C',
+    backgroundColor: theme.accent,
   },
 
   goalText: {
-    color: '#746A5D',
+    color: theme.textSecondary,
     fontSize: 15,
     fontWeight: '900',
   },
 
   goalTextActive: {
-    color: '#FFFFFF',
+    color: theme.accentText,
   },
 
   helperText: {
     marginTop: 14,
     fontSize: 13,
     lineHeight: 19,
-    color: '#8A8174',
+    color: theme.textSecondary,
     textAlign: 'right',
   },
 
   saveButton: {
-    backgroundColor: '#8EAA8C',
+    backgroundColor: theme.accent,
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: 'center',
@@ -120,34 +123,34 @@ const sportsSetupStyles = StyleSheet.create({
   },
 
   saveButtonText: {
-    color: '#FFFFFF',
+    color: theme.accentText,
     fontWeight: '700',
     fontSize: 13,
   },
 
   turnOffButton: {
-    backgroundColor: '#FFFDF7',
+    backgroundColor: theme.surface,
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: 'center',
     marginTop: 10,
     borderWidth: 1,
-    borderColor: '#7B4F3A',
+    borderColor: theme.danger,
   },
 
   turnOffButtonText: {
-    color: '#7B4F3A',
+    color: theme.danger,
     fontWeight: '800',
     fontSize: 13,
   },
 
   saveMessage: {
     marginTop: 10,
-    color: '#6F8F6D',
+    color: theme.accentDark,
     fontWeight: '800',
     fontSize: 13,
     textAlign: 'center',
   },
 });
 
-export default sportsSetupStyles;
+export default createSportsSetupStyles;

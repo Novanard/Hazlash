@@ -1,9 +1,12 @@
+import { Colors } from '@/constants/theme';
 import { StyleSheet } from 'react-native';
 
-const sleepSetupStyles = StyleSheet.create({
+type AppTheme = (typeof Colors)[keyof typeof Colors];
+
+const createSleepSetupStyles = (theme: AppTheme) => StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#F4EFE4',
+    backgroundColor: theme.background,
   },
 
   content: {
@@ -19,7 +22,7 @@ const sleepSetupStyles = StyleSheet.create({
   },
 
   backText: {
-    color: '#6F8F6D',
+    color: theme.accentDark,
     fontSize: 16,
     fontWeight: '800',
   },
@@ -27,20 +30,20 @@ const sleepSetupStyles = StyleSheet.create({
   logo: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#2F332C',
+    color: theme.text,
   },
 
   title: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#2F332C',
+    color: theme.text,
     textAlign: 'right',
     marginTop: 24,
   },
 
   subtitle: {
     fontSize: 13,
-    color: '#8A8174',
+    color: theme.textSecondary,
     textAlign: 'right',
     marginTop: 4,
     marginBottom: 18,
@@ -48,10 +51,10 @@ const sleepSetupStyles = StyleSheet.create({
   },
 
   card: {
-    backgroundColor: '#FFFDF7',
+    backgroundColor: theme.surface,
     borderRadius: 22,
     padding: 16,
-    shadowColor: '#000000',
+    shadowColor: theme.shadow,
     shadowOpacity: 0.08,
     shadowRadius: 12,
     elevation: 3,
@@ -61,7 +64,7 @@ const sleepSetupStyles = StyleSheet.create({
   cardTitle: {
     fontSize: 17,
     fontWeight: '800',
-    color: '#34382F',
+    color: theme.text,
     textAlign: 'right',
     marginBottom: 10,
   },
@@ -69,41 +72,41 @@ const sleepSetupStyles = StyleSheet.create({
   label: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#746A5D',
+    color: theme.textSecondary,
     textAlign: 'right',
     marginTop: 10,
     marginBottom: 6,
   },
 
   input: {
-    backgroundColor: '#F4EFE4',
+    backgroundColor: theme.input,
     borderRadius: 14,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 16,
     fontWeight: '700',
-    color: '#2F332C',
+    color: theme.text,
   },
 
   toggleButton: {
-    backgroundColor: '#F4EFE4',
+    backgroundColor: theme.input,
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: 'center',
   },
 
   toggleButtonActive: {
-    backgroundColor: '#E6D8BD',
+    backgroundColor: theme.backgroundSelected,
   },
 
   toggleText: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#746A5D',
+    color: theme.textSecondary,
   },
 
   toggleTextActive: {
-    color: '#6F8F6D',
+    color: theme.accentDark,
   },
 
   reminderRow: {
@@ -114,28 +117,28 @@ const sleepSetupStyles = StyleSheet.create({
 
   minuteButton: {
     flex: 1,
-    backgroundColor: '#F4EFE4',
+    backgroundColor: theme.input,
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: 'center',
   },
 
   minuteButtonActive: {
-    backgroundColor: '#8EAA8C',
+    backgroundColor: theme.accent,
   },
 
   minuteText: {
-    color: '#746A5D',
+    color: theme.textSecondary,
     fontWeight: '800',
     fontSize: 13,
   },
 
   minuteTextActive: {
-    color: '#FFFFFF',
+    color: theme.accentText,
   },
 
   saveButton: {
-    backgroundColor: '#8EAA8C',
+    backgroundColor: theme.accent,
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: 'center',
@@ -143,33 +146,33 @@ const sleepSetupStyles = StyleSheet.create({
   },
 
   saveButtonText: {
-    color: '#FFFFFF',
+    color: theme.accentText,
     fontWeight: '700',
     fontSize: 13,
   },
 
   saveMessage: {
     marginTop: 10,
-    color: '#6F8F6D',
+    color: theme.accentDark,
     fontWeight: '800',
     fontSize: 13,
     textAlign: 'center',
   },
   turnOffButton: {
-  backgroundColor: '#FFFDF7',
+  backgroundColor: theme.surface,
   borderRadius: 12,
   paddingVertical: 14,
   alignItems: 'center',
   marginTop: 10,
   borderWidth: 1,
-  borderColor: '#7B4F3A',
+  borderColor: theme.danger,
 },
 
 turnOffButtonText: {
-  color: '#7B4F3A',
+  color: theme.danger,
   fontWeight: '800',
   fontSize: 13,
 },
 });
 
-export default sleepSetupStyles;
+export default createSleepSetupStyles;

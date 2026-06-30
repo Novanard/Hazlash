@@ -1,8 +1,12 @@
+import { Colors } from '@/constants/theme';
 import { StyleSheet } from 'react-native';
-const homeS = StyleSheet.create({
+
+type AppTheme = (typeof Colors)[keyof typeof Colors];
+
+const createHomeStyles = (theme: AppTheme) => StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#F4EFE4',
+    backgroundColor: theme.background,
   },
   header: {
     flexDirection: 'row',
@@ -11,23 +15,23 @@ const homeS = StyleSheet.create({
   },
   bell: {
     fontSize: 22,
-    color: '#3F4A3C',
+    color: theme.text,
   },
   logo: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#2F332C',
+    color: theme.text,
   },
   title: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#2F332C',
+    color: theme.text,
     textAlign: 'right',
     marginTop: 24,
   },
   subtitle: {
     fontSize: 13,
-    color: '#8A8174',
+    color: theme.textSecondary,
     textAlign: 'right',
     marginTop: 4,
     marginBottom: 18,
@@ -40,10 +44,10 @@ const homeS = StyleSheet.create({
 smallCard: {
   flex: 1,
   minHeight: 250,
-  backgroundColor: '#FFFDF7',
+  backgroundColor: theme.surface,
   borderRadius: 22,
   padding: 16,
-  shadowColor: '#000000',
+  shadowColor: theme.shadow,
   shadowOpacity: 0.08,
   shadowRadius: 12,
   elevation: 3,
@@ -52,13 +56,13 @@ smallCard: {
   cardTitle: {
     fontSize: 17,
     fontWeight: '800',
-    color: '#34382F',
+    color: theme.text,
     textAlign: 'right',
     marginBottom: 8,
   },
   timeText: {
     fontSize: 13,
-    color: '#8A8174',
+    color: theme.textSecondary,
     textAlign: 'right',
     marginBottom: 8,
   },
@@ -74,33 +78,33 @@ progressCircle: {
 progressPercent: {
   position: 'absolute',
   fontSize: 20,
-  color: '#6F8F6D',
+  color: theme.accentDark,
   fontWeight: '900',
 },
   progressLabel: {
     fontSize: 12,
-    color: '#8A8174',
+    color: theme.textSecondary,
     textAlign: 'center',
     marginTop: 8,
     fontWeight: '700',
   },
   goalTitle: {
     fontSize: 14,
-    color: '#34382F',
+    color: theme.text,
     textAlign: 'right',
     fontWeight: '700',
     marginTop: 8,
   },
   goalProgress: {
     fontSize: 12,
-    color: '#8A8174',
+    color: theme.textSecondary,
     textAlign: 'right',
     marginTop: 5,
     marginBottom: 12,
   },
   goalBar: {
     height: 9,
-    backgroundColor: '#E2D8C8',
+    backgroundColor: theme.border,
     borderRadius: 99,
     overflow: 'hidden',
     marginBottom: 16,
@@ -108,26 +112,26 @@ progressPercent: {
   goalBarFill: {
     width: '75%',
     height: '100%',
-    backgroundColor: '#8EAA8C',
+    backgroundColor: theme.accent,
     borderRadius: 99,
   },
   greenButton: {
-    backgroundColor: '#8EAA8C',
+    backgroundColor: theme.accent,
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: 'center',
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: theme.accentText,
     fontWeight: '700',
     fontSize: 13,
   },
   wideCard: {
-    backgroundColor: '#E6D8BD',
+    backgroundColor: theme.backgroundSelected,
     borderRadius: 24,
     padding: 20,
     minHeight: 250,
-    shadowColor: '#000000',
+    shadowColor: theme.shadow,
     shadowOpacity: 0.08,
     shadowRadius: 12,
     elevation: 3,
@@ -138,18 +142,18 @@ progressPercent: {
     left: 18,
     top: 12,
     fontSize: 22,
-    color: '#5C554A',
+    color: theme.textSecondary,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: '800',
-    color: '#3B3A32',
+    color: theme.text,
     textAlign: 'right',
     marginBottom: 6,
   },
   cardText: {
     fontSize: 14,
-    color: '#746A5D',
+    color: theme.textSecondary,
     textAlign: 'right',
     marginBottom: 14,
     lineHeight: 20,
@@ -169,25 +173,25 @@ progressPercent: {
     borderRadius: 11,
     textAlign: 'center',
     lineHeight: 22,
-    color: '#746A5D',
+    color: theme.textSecondary,
     fontWeight: '800',
   },
   taskCheckDone: {
-    backgroundColor: '#8EAA8C',
-    color: '#FFFFFF',
+    backgroundColor: theme.accent,
+    color: theme.accentText,
   },
   taskText: {
     flex: 1,
     fontSize: 13,
-    color: '#4E473E',
+    color: theme.text,
     textAlign: 'right',
     fontWeight: '600',
   },
   taskTextDone: {
-    color: '#2F332C',
+    color: theme.text,
   },
   fullButton: {
-    backgroundColor: '#8EAA8C',
+    backgroundColor: theme.accent,
     borderRadius: 13,
     paddingVertical: 14,
     alignItems: 'center',
@@ -195,17 +199,17 @@ progressPercent: {
   sectionHeader: {
     fontSize: 20,
     fontWeight: '800',
-    color: '#2F332C',
+    color: theme.text,
     textAlign: 'right',
     marginBottom: 12,
   },
   bottomCard: {
     flex: 1,
-    backgroundColor: '#FFFDF7',
+    backgroundColor: theme.surface,
     borderRadius: 20,
     padding: 18,
     minHeight: 132,
-    shadowColor: '#000000',
+    shadowColor: theme.shadow,
     shadowOpacity: 0.06,
     shadowRadius: 10,
     elevation: 2,
@@ -213,38 +217,38 @@ progressPercent: {
   bottomTitle: {
     fontSize: 17,
     fontWeight: '800',
-    color: '#34382F',
+    color: theme.text,
     textAlign: 'right',
   },
   bottomText: {
     fontSize: 13,
-    color: '#8A8174',
+    color: theme.textSecondary,
     textAlign: 'right',
     marginTop: 6,
     lineHeight: 18,
   },
   checkinButton: {
     marginTop: 14,
-    backgroundColor: '#8EAA8C',
+    backgroundColor: theme.accent,
     borderRadius: 12,
     paddingVertical: 10,
     alignItems: 'center',
   },
   checkinButtonText: {
-    color: '#FFFFFF',
+    color: theme.accentText,
     fontSize: 13,
     fontWeight: '800',
   },
   reserveBadge: {
     marginTop: 14,
     alignSelf: 'flex-end',
-    backgroundColor: '#EFE8DA',
+    backgroundColor: theme.surfaceMuted,
     borderRadius: 999,
     paddingHorizontal: 12,
     paddingVertical: 7,
   },
   reserveBadgeText: {
-    color: '#7D735F',
+    color: theme.textSecondary,
     fontSize: 12,
     fontWeight: '800',
   },
@@ -255,17 +259,17 @@ progressPercent: {
     width: 58,
     height: 58,
     borderRadius: 29,
-    backgroundColor: '#82A37F',
+    backgroundColor: theme.accent,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000000',
+    shadowColor: theme.shadow,
     shadowOpacity: 0.18,
     shadowRadius: 10,
     elevation: 5,
     zIndex: 10,
   },
   floatingText: {
-    color: '#FFFFFF',
+    color: theme.accentText,
     fontSize: 30,
     fontWeight: '800',
     lineHeight: 34,
@@ -276,7 +280,7 @@ progressPercent: {
     left: 0,
     right: 0,
     height: 74,
-    backgroundColor: '#FFFDF7',
+    backgroundColor: theme.surface,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     flexDirection: 'row-reverse',
@@ -286,11 +290,11 @@ progressPercent: {
   },
   navItem: {
     fontSize: 24,
-    color: '#9A958B',
+    color: theme.textSecondary,
   },
   navActive: {
     fontSize: 25,
-    color: '#7B9B78',
+    color: theme.accentDark,
     fontWeight: '800',
   },
   content: {
@@ -304,7 +308,7 @@ progressPercent: {
   },
 
   removeTaskText: {
-    color: '#7B4F3A',
+    color: theme.danger,
     fontWeight: '700',
   },
 
@@ -313,49 +317,49 @@ progressPercent: {
   },
 
   taskInput: {
-    backgroundColor: '#F4EFE4',
+    backgroundColor: theme.input,
     borderRadius: 14,
     paddingHorizontal: 14,
     paddingVertical: 10,
-    color: '#2F332C',
+    color: theme.text,
     marginBottom: 10,
   },
   root: {
     flex: 1,
-    backgroundColor: '#F4EFE4',
+    backgroundColor: theme.background,
   },
   finishDayButton: {
     marginTop: 10,
-    backgroundColor: '#FFFDF7',
+    backgroundColor: theme.surface,
     borderRadius: 13,
     paddingVertical: 14,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#8EAA8C',
+    borderColor: theme.accent,
   },
 
   finishDayText: {
-    color: '#6F8F6D',
+    color: theme.accentDark,
     fontWeight: '900',
     fontSize: 13,
   },
   saveMessage: {
     marginTop: 10,
-    color: '#6F8F6D',
+    color: theme.accentDark,
     fontWeight: '800',
     fontSize: 13,
     textAlign: 'center',
   },
   myDaysButton: {
   marginTop: 10,
-  backgroundColor: '#EFE8DA',
+  backgroundColor: theme.surfaceMuted,
   borderRadius: 12,
   paddingVertical: 9,
   alignItems: 'center',
 },
 
 myDaysButtonText: {
-  color: '#6F8F6D',
+  color: theme.accentDark,
   fontSize: 12,
   fontWeight: '900',
 },
@@ -364,15 +368,15 @@ bottomButton: {
 },
 workoutQuestionCard: {
   marginTop: 10,
-  backgroundColor: '#FFFDF7',
+  backgroundColor: theme.surface,
   borderRadius: 13,
   padding: 14,
   borderWidth: 1,
-  borderColor: '#8EAA8C',
+  borderColor: theme.accent,
 },
 
 workoutQuestionTitle: {
-  color: '#2F332C',
+  color: theme.text,
   fontWeight: '800',
   fontSize: 13,
   textAlign: 'right',
@@ -386,7 +390,7 @@ workoutQuestionRow: {
 
 workoutYesButton: {
   flex: 1,
-  backgroundColor: '#8EAA8C',
+  backgroundColor: theme.accent,
   borderRadius: 12,
   paddingVertical: 12,
   alignItems: 'center',
@@ -394,16 +398,16 @@ workoutYesButton: {
 
 workoutNoButton: {
   flex: 1,
-  backgroundColor: '#FFFDF7',
+  backgroundColor: theme.surface,
   borderRadius: 12,
   paddingVertical: 12,
   alignItems: 'center',
   borderWidth: 1,
-  borderColor: '#8EAA8C',
+  borderColor: theme.accent,
 },
 streakContainer: {
   marginTop: 10,
-  backgroundColor: '#FFFDF7',
+  backgroundColor: theme.surface,
   borderRadius: 10,
   paddingVertical: 8,
   paddingHorizontal: 12,
@@ -411,14 +415,14 @@ streakContainer: {
 
 streakText: {
   textAlign: 'center',
-  color: '#6F8F6D',
+  color: theme.accentDark,
   fontWeight: '800',
   fontSize: 13,
 },
 streakDivider: {
   height: 1,
-  backgroundColor: '#E2D8C8',
+  backgroundColor: theme.border,
   marginVertical: 10,
 },
 });
-export default homeS;
+export default createHomeStyles;

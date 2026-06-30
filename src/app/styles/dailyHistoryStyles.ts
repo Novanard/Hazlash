@@ -1,8 +1,12 @@
+import { Colors } from '@/constants/theme';
 import { StyleSheet } from "react-native";
-const dHistoryStyles = StyleSheet.create({
+
+type AppTheme = (typeof Colors)[keyof typeof Colors];
+
+const createDHistoryStyles = (theme: AppTheme) => StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#F4EFE4',
+    backgroundColor: theme.background,
   },
   content: {
     padding: 22,
@@ -12,37 +16,37 @@ const dHistoryStyles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '900',
-    color: '#2F332C',
+    color: theme.text,
     textAlign: 'right',
   },
   subtitle: {
     fontSize: 15,
-    color: '#8A8174',
+    color: theme.textSecondary,
     textAlign: 'right',
     marginTop: 8,
     marginBottom: 18,
     lineHeight: 22,
   },
   emptyCard: {
-    backgroundColor: '#FFFDF7',
+    backgroundColor: theme.surface,
     borderRadius: 22,
     padding: 20,
   },
   emptyTitle: {
     fontSize: 18,
     fontWeight: '900',
-    color: '#34382F',
+    color: theme.text,
     textAlign: 'right',
   },
   emptyText: {
     fontSize: 14,
-    color: '#8A8174',
+    color: theme.textSecondary,
     textAlign: 'right',
     marginTop: 8,
     lineHeight: 20,
   },
   card: {
-    backgroundColor: '#FFFDF7',
+    backgroundColor: theme.surface,
     borderRadius: 22,
     padding: 18,
     marginBottom: 14,
@@ -50,7 +54,7 @@ const dHistoryStyles = StyleSheet.create({
   date: {
     fontSize: 17,
     fontWeight: '900',
-    color: '#34382F',
+    color: theme.text,
     textAlign: 'right',
     marginBottom: 10,
   },
@@ -62,16 +66,16 @@ const dHistoryStyles = StyleSheet.create({
   percent: {
     fontSize: 24,
     fontWeight: '900',
-    color: '#6F8F6D',
+    color: theme.accentDark,
   },
   summary: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#8A8174',
+    color: theme.textSecondary,
   },
   bar: {
     height: 9,
-    backgroundColor: '#E2D8C8',
+    backgroundColor: theme.border,
     borderRadius: 999,
     overflow: 'hidden',
     marginTop: 12,
@@ -79,7 +83,7 @@ const dHistoryStyles = StyleSheet.create({
   },
   barFill: {
     height: '100%',
-    backgroundColor: '#8EAA8C',
+    backgroundColor: theme.accent,
     borderRadius: 999,
   },
   taskList: {
@@ -88,19 +92,19 @@ const dHistoryStyles = StyleSheet.create({
   },
   taskText: {
     fontSize: 14,
-    color: '#4E473E',
+    color: theme.text,
     textAlign: 'right',
     fontWeight: '600',
   },
   backButton: {
-    backgroundColor: '#8EAA8C',
+    backgroundColor: theme.accent,
     borderRadius: 16,
     paddingVertical: 16,
     alignItems: 'center',
     marginTop: 10,
   },
   backButtonText: {
-    color: '#FFFFFF',
+    color: theme.accentText,
     fontSize: 16,
     fontWeight: '900',
   },
@@ -112,16 +116,16 @@ const dHistoryStyles = StyleSheet.create({
 },
 
 deleteText: {
-  color: '#7B4F3A',
+  color: theme.danger,
   fontWeight: '900',
   fontSize: 13,
 },
 sleepScore: {
   marginTop: 6,
   fontSize: 13,
-  color: '#6F8F6D',
+  color: theme.accentDark,
   fontWeight: '800',
   textAlign: 'right',
 },
 });
-export default dHistoryStyles;
+export default createDHistoryStyles;

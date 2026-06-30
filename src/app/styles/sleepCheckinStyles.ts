@@ -1,9 +1,12 @@
+import { Colors } from '@/constants/theme';
 import { StyleSheet } from 'react-native';
 
-const sleepCheckinStyles = StyleSheet.create({
+type AppTheme = (typeof Colors)[keyof typeof Colors];
+
+const createSleepCheckinStyles = (theme: AppTheme) => StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#F4EFE4',
+    backgroundColor: theme.background,
   },
 
   content: {
@@ -19,7 +22,7 @@ const sleepCheckinStyles = StyleSheet.create({
   },
 
   backText: {
-    color: '#6F8F6D',
+    color: theme.accentDark,
     fontSize: 16,
     fontWeight: '800',
   },
@@ -27,20 +30,20 @@ const sleepCheckinStyles = StyleSheet.create({
   logo: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#2F332C',
+    color: theme.text,
   },
 
   title: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#2F332C',
+    color: theme.text,
     textAlign: 'right',
     marginTop: 24,
   },
 
   subtitle: {
     fontSize: 13,
-    color: '#8A8174',
+    color: theme.textSecondary,
     textAlign: 'right',
     marginTop: 4,
     marginBottom: 18,
@@ -48,10 +51,10 @@ const sleepCheckinStyles = StyleSheet.create({
   },
 
   card: {
-    backgroundColor: '#FFFDF7',
+    backgroundColor: theme.surface,
     borderRadius: 22,
     padding: 16,
-    shadowColor: '#000000',
+    shadowColor: theme.shadow,
     shadowOpacity: 0.08,
     shadowRadius: 12,
     elevation: 3,
@@ -61,7 +64,7 @@ const sleepCheckinStyles = StyleSheet.create({
   question: {
     fontSize: 17,
     fontWeight: '800',
-    color: '#34382F',
+    color: theme.text,
     textAlign: 'right',
     marginBottom: 12,
   },
@@ -73,24 +76,24 @@ const sleepCheckinStyles = StyleSheet.create({
 
   optionButton: {
     flex: 1,
-    backgroundColor: '#F4EFE4',
+    backgroundColor: theme.input,
     borderRadius: 12,
     paddingVertical: 13,
     alignItems: 'center',
   },
 
   optionButtonActive: {
-    backgroundColor: '#8EAA8C',
+    backgroundColor: theme.accent,
   },
 
   optionText: {
-    color: '#746A5D',
+    color: theme.textSecondary,
     fontSize: 13,
     fontWeight: '800',
   },
 
   optionTextActive: {
-    color: '#FFFFFF',
+    color: theme.accentText,
   },
 
   verticalOptions: {
@@ -98,14 +101,14 @@ const sleepCheckinStyles = StyleSheet.create({
   },
 
   wideOption: {
-    backgroundColor: '#F4EFE4',
+    backgroundColor: theme.input,
     borderRadius: 12,
     paddingVertical: 13,
     alignItems: 'center',
   },
 
   saveButton: {
-    backgroundColor: '#8EAA8C',
+    backgroundColor: theme.accent,
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: 'center',
@@ -113,18 +116,18 @@ const sleepCheckinStyles = StyleSheet.create({
   },
 
   saveButtonText: {
-    color: '#FFFFFF',
+    color: theme.accentText,
     fontWeight: '700',
     fontSize: 13,
   },
 
   saveMessage: {
     marginTop: 10,
-    color: '#6F8F6D',
+    color: theme.accentDark,
     fontWeight: '800',
     fontSize: 13,
     textAlign: 'center',
   },
 });
 
-export default sleepCheckinStyles;
+export default createSleepCheckinStyles;

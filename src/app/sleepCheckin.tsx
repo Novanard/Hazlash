@@ -1,13 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import sleepCheckinS from './styles/sleepCheckinStyles';
+import { useTheme } from '@/hooks/use-theme';
+import createSleepCheckinStyles from './styles/sleepCheckinStyles';
 
 type NightWakeup = 'no' | 'once' | 'multiple';
 
@@ -24,6 +25,8 @@ const SLEEP_HISTORY_STORAGE_KEY = 'hazlash_sleep_history';
 
 export default function SleepCheckinScreen() {
   const router = useRouter();
+  const theme = useTheme();
+  const sleepCheckinS = useMemo(() => createSleepCheckinStyles(theme), [theme]);
 
   const [sleptOnTime, setSleptOnTime] = useState<boolean | null>(null);
   const [wokeOnTime, setWokeOnTime] = useState<boolean | null>(null);

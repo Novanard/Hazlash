@@ -2,7 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import recStyles from './styles/recommStyles';
+import { useTheme } from '@/hooks/use-theme';
+import createRecStyles from './styles/recommStyles';
 
 type Task = {
   title: string;
@@ -24,6 +25,8 @@ const SLEEP_HISTORY_STORAGE_KEY = 'hazlash_sleep_history';
 
 export default function RecommendationScreen() {
   const router = useRouter();
+  const theme = useTheme();
+  const recStyles = useMemo(() => createRecStyles(theme), [theme]);
 
   const {
     energy = 'medium',

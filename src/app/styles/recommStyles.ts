@@ -1,8 +1,12 @@
+import { Colors } from '@/constants/theme';
 import { StyleSheet } from "react-native";
-const recStyles = StyleSheet.create({
+
+type AppTheme = (typeof Colors)[keyof typeof Colors];
+
+const createRecStyles = (theme: AppTheme) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F4EFE4',
+    backgroundColor: theme.background,
     justifyContent: 'center',
     padding: 24,
   },
@@ -11,9 +15,10 @@ const recStyles = StyleSheet.create({
     fontWeight: '800',
     textAlign: 'right',
     marginBottom: 25,
+    color: theme.text,
   },
   card: {
-    backgroundColor: 'white',
+    backgroundColor: theme.surface,
     borderRadius: 20,
     padding: 20,
   },
@@ -22,17 +27,18 @@ const recStyles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 17,
     lineHeight: 28,
+    color: theme.text,
   },
   button: {
-    backgroundColor: '#8EAA8C',
+    backgroundColor: theme.accent,
     padding: 18,
     borderRadius: 16,
     marginTop: 30,
     alignItems: 'center',
   },
   buttonText: {
-    color: 'white',
+    color: theme.accentText,
     fontWeight: '700',
   },
 });
-export default recStyles;
+export default createRecStyles;

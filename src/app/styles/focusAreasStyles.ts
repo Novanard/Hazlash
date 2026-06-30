@@ -1,9 +1,12 @@
+import { Colors } from '@/constants/theme';
 import { StyleSheet } from 'react-native';
 
-const focusAreasStyles = StyleSheet.create({
+type AppTheme = (typeof Colors)[keyof typeof Colors];
+
+const createFocusAreasStyles = (theme: AppTheme) => StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#F4EFE4',
+    backgroundColor: theme.background,
   },
 
   content: {
@@ -14,33 +17,27 @@ const focusAreasStyles = StyleSheet.create({
 
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center',
-  },
-
-  backText: {
-    color: '#6F8F6D',
-    fontSize: 16,
-    fontWeight: '800',
   },
 
   logo: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#2F332C',
+    color: theme.text,
   },
 
   title: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#2F332C',
+    color: theme.text,
     textAlign: 'right',
     marginTop: 24,
   },
 
   subtitle: {
     fontSize: 13,
-    color: '#8A8174',
+    color: theme.textSecondary,
     textAlign: 'right',
     marginTop: 4,
     marginBottom: 18,
@@ -52,10 +49,10 @@ const focusAreasStyles = StyleSheet.create({
   },
 
   areaCard: {
-    backgroundColor: '#FFFDF7',
+    backgroundColor: theme.surface,
     borderRadius: 22,
     padding: 16,
-    shadowColor: '#000000',
+    shadowColor: theme.shadow,
     shadowOpacity: 0.08,
     shadowRadius: 12,
     elevation: 3,
@@ -64,8 +61,8 @@ const focusAreasStyles = StyleSheet.create({
   },
 
   areaCardActive: {
-    backgroundColor: '#E6D8BD',
-    borderColor: '#8EAA8C',
+    backgroundColor: theme.backgroundSelected,
+    borderColor: theme.accent,
   },
 
   areaCardDisabled: {
@@ -81,39 +78,53 @@ const focusAreasStyles = StyleSheet.create({
   areaTitle: {
     fontSize: 17,
     fontWeight: '800',
-    color: '#34382F',
+    color: theme.text,
     textAlign: 'right',
   },
 
   statusText: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#8A8174',
+    color: theme.textSecondary,
   },
 
   statusTextActive: {
-    color: '#6F8F6D',
+    color: theme.accentDark,
   },
 
   areaDescription: {
     marginTop: 8,
     fontSize: 13,
     lineHeight: 18,
-    color: '#8A8174',
+    color: theme.textSecondary,
     textAlign: 'right',
   },
 
   note: {
     marginTop: 20,
-    backgroundColor: '#E6D8BD',
+    backgroundColor: theme.backgroundSelected,
     borderRadius: 18,
     padding: 16,
     fontSize: 13,
     lineHeight: 20,
-    color: '#746A5D',
+    color: theme.textSecondary,
     textAlign: 'right',
     fontWeight: '600',
   },
+
+  backButton: {
+    backgroundColor: theme.accent,
+    borderRadius: 16,
+    paddingVertical: 16,
+    alignItems: 'center',
+    marginTop: 22,
+  },
+
+  backButtonText: {
+    color: theme.accentText,
+    fontSize: 16,
+    fontWeight: '900',
+  },
 });
 
-export default focusAreasStyles;
+export default createFocusAreasStyles;
