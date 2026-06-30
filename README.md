@@ -52,11 +52,16 @@ Hazlash/
 
 - Node.js 20 or newer is recommended.
 - npm.
-- Expo Go on a physical Android/iOS device, or Android Studio/Xcode simulators.
-
-For native production builds, you will also need an Expo account and EAS CLI.
+- Expo Go on a physical Android/iOS device if you want to run the app on your phone.
 
 ## Getting Started
+
+Clone the repository:
+
+```bash
+git clone <repository-url>
+cd Hazlash
+```
 
 Install dependencies:
 
@@ -72,10 +77,8 @@ npm start
 
 Then choose one of the options shown in the terminal:
 
-- Press `a` to open Android.
-- Press `i` to open iOS.
-- Press `w` to open the web version.
-- Scan the QR code with Expo Go on your phone.
+- For web: open the localhost URL printed by Expo, usually `http://localhost:8081`.
+- For phone: press `s` in the Expo terminal to switch to Expo Go mode, then scan the QR code with the Expo Go app.
 
 You can also run platform-specific commands:
 
@@ -129,81 +132,17 @@ Hazlash currently stores user data locally on the device/browser using AsyncStor
 
 There is no backend server in the current version, so data is not synced between devices.
 
-## Deployment
+## Running the App
 
-### Deploy as a Web App
+Hazlash is meant to be run through Expo during development/demo.
 
-The Expo config is already set to static web output:
+1. Open the project in your IDE.
+2. Run `npm install`.
+3. Run `npx expo start`.
+4. To use the web version, open the localhost link shown in the terminal.
+5. To use a phone, install Expo Go, press `s` in the Expo terminal to switch to Expo Go, and scan the QR code.
 
-```json
-"web": {
-  "output": "static"
-}
-```
-
-Create a static web build:
-
-```bash
-npx expo export --platform web
-```
-
-Expo will generate a `dist/` folder. Deploy that folder to a static hosting provider such as Vercel, Netlify, GitHub Pages, or Firebase Hosting.
-
-Example Netlify setup:
-
-- Build command: `npx expo export --platform web`
-- Publish directory: `dist`
-
-Example Vercel setup:
-
-- Framework preset: Other
-- Build command: `npx expo export --platform web`
-- Output directory: `dist`
-
-### Deploy Native Builds with EAS
-
-Install EAS CLI:
-
-```bash
-npm install -g eas-cli
-```
-
-Log in to Expo:
-
-```bash
-eas login
-```
-
-Configure the project:
-
-```bash
-eas build:configure
-```
-
-Create an Android build:
-
-```bash
-eas build --platform android
-```
-
-Create an iOS build:
-
-```bash
-eas build --platform ios
-```
-
-Create builds for both platforms:
-
-```bash
-eas build --platform all
-```
-
-After the build finishes, Expo will provide a download/install link. For app store releases, follow Expo's EAS Submit flow:
-
-```bash
-eas submit --platform android
-eas submit --platform ios
-```
+That is all you need for the current version. There is no backend server or production deployment setup required.
 
 ## App Configuration
 
