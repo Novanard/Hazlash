@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "hazarash",
-    "slug": "hazarash",
+    "name": "Hazlash",
+    "slug": "hazlash",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "hazarash",
+    "scheme": "hazlash",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon"

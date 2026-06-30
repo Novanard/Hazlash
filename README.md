@@ -152,9 +152,9 @@ Main Expo configuration lives in `app.json`.
 
 Important fields:
 
-- App name: `hazarash`
-- Slug: `hazarash`
-- URL scheme: `hazarash`
+- App name: `Hazlash`
+- Slug: `hazlash`
+- URL scheme: `hazlash`
 - Orientation: portrait
 - Splash background: `#208AEF`
 
