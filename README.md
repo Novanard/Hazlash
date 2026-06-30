@@ -72,7 +72,7 @@ npm install
 Start the Expo development server:
 
 ```bash
-npm start
+npx expo start
 ```
 
 Then choose one of the options shown in the terminal:
@@ -80,9 +80,10 @@ Then choose one of the options shown in the terminal:
 - For web: open the localhost URL printed by Expo, usually `http://localhost:8081`.
 - For phone: press `s` in the Expo terminal to switch to Expo Go mode, then scan the QR code with the Expo Go app.
 
-You can also run platform-specific commands:
+You can also use the npm scripts:
 
 ```bash
+npm start
 npm run android
 npm run ios
 npm run web
@@ -137,12 +138,13 @@ There is no backend server in the current version, so data is not synced between
 Hazlash is meant to be run through Expo during development/demo.
 
 1. Open the project in your IDE.
-2. Run `npm install`.
-3. Run `npx expo start`.
-4. To use the web version, open the localhost link shown in the terminal.
-5. To use a phone, install Expo Go, press `s` in the Expo terminal to switch to Expo Go, and scan the QR code.
+2. Clone the repository and enter the project folder.
+3. Run `npm install`.
+4. Run `npx expo start`.
+5. To use the web version, open the localhost link shown in the terminal.
+6. To use a phone, install Expo Go, press `s` in the Expo terminal to switch to Expo Go, and scan the QR code.
 
-That is all you need for the current version. There is no backend server or production deployment setup required.
+That is all you need for the current version. There is no backend server or extra setup.
 
 ## App Configuration
 
@@ -154,10 +156,7 @@ Important fields:
 - Slug: `hazarash`
 - URL scheme: `hazarash`
 - Orientation: portrait
-- Web output: static
 - Splash background: `#208AEF`
-
-Before publishing, confirm the final display name, package/bundle identifiers, icons, and store metadata.
 
 ## Notes for Contributors
 
